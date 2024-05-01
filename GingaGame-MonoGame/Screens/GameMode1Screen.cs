@@ -11,6 +11,8 @@ public class GameMode1Screen : GameScreen
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
     private readonly Container _container;
+    private readonly Score _score;
+    private readonly Scoreboard _scoreboard;
     private Texture2D _backgroundTexture;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
@@ -23,8 +25,6 @@ public class GameMode1Screen : GameScreen
     private float _topScoresFontScale;
     private Texture2D _topScoresFontTexture;
     private string _topScoresText;
-    private readonly Score _score;
-    private readonly Scoreboard _scoreboard;
 
     public GameMode1Screen(Game1 game) : base(game)
     {
@@ -35,25 +35,19 @@ public class GameMode1Screen : GameScreen
 
     public override void LoadContent()
     {
-        // Load the textures and font
+        LoadTexturesAndFont();
+        CalculateScales();
+        InitializeElements();
+    }
+
+    private void LoadTexturesAndFont()
+    {
         _backgroundTexture = LoadTexture("Resources/Background2");
         _nextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
         _scoreFontTexture = LoadTexture("Resources/ScoreFont");
         _evolutionCycleTexture = LoadTexture("Resources/EvolutionCycle");
         _topScoresFontTexture = LoadTexture("Resources/TopScoresFont");
         _font = Game.Content.Load<SpriteFont>("MyFont");
-
-        // Calculate the scale factors
-        _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
-        _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
-        _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
-            
-        // Initialize the screen elements
-        _scoreText = "0";
-        // Get the top scores as a string
-        _topScoresText = string.Join("\n", _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
-        _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
-            Game.GraphicsDevice.Viewport.Height);
     }
 
     private Texture2D LoadTexture(string path)
@@ -64,6 +58,23 @@ public class GameMode1Screen : GameScreen
     private static float CalculateScale(float height)
     {
         return DesiredFontHeight / height;
+    }
+
+    private void CalculateScales()
+    {
+        _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
+        _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
+        _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
+    }
+
+    private void InitializeElements()
+    {
+        _scoreText = "0";
+        // Get the top scores as a string
+        _topScoresText = string.Join("\n",
+            _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
+        _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
+            Game.GraphicsDevice.Viewport.Height);
     }
 
     public override void Update(GameTime gameTime)
