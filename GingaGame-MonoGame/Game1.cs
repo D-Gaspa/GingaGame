@@ -13,6 +13,7 @@ public class Game1 : Game
 
     public Game1()
     {
+        // Set the graphics device manager
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;

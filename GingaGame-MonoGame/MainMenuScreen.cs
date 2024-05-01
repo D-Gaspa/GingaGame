@@ -24,11 +24,21 @@ public class MainMenuScreen : GameScreen
 
     public override void LoadContent()
     {
+        LoadTextures();
+        SetupLayout();
+    }
+
+    private void LoadTextures()
+    {
+        // Load the textures
         _backgroundTexture = Game.Content.Load<Texture2D>("Resources/Background");
         _logoTexture = Game.Content.Load<Texture2D>("Resources/Logo");
         _gameMode1ButtonTexture = Game.Content.Load<Texture2D>("Resources/GameMode1Button");
         _gameMode2ButtonTexture = Game.Content.Load<Texture2D>("Resources/GameMode2Button");
+    }
 
+    private void SetupLayout()
+    {
         // Set the position and size of the logo
         _logoRect = new Rectangle(CenterX - (int)(_logoTexture.Width * LogoScaleFactor) / 2, 50,
             (int)(_logoTexture.Width * LogoScaleFactor), (int)(_logoTexture.Height * LogoScaleFactor));
@@ -44,33 +54,39 @@ public class MainMenuScreen : GameScreen
         if (Game1.MouseState.LeftButton != ButtonState.Pressed) return;
         if (_gameMode1ButtonRect.Contains(Game1.MouseState.Position))
             // Game mode 1 button was clicked
-            // Switch to game mode 1 screen
-            Game.SwitchScreen(new GameMode1Screen(Game));
+            Game.SwitchScreen(new GameMode1Screen(Game)); // Switch to game mode 1 screen
         else if (_gameMode2ButtonRect.Contains(Game1.MouseState.Position))
             // Game mode 2 button was clicked
-            // Switch to game mode 2 screen
-            Game.SwitchScreen(new GameMode2Screen(Game));
+            Game.SwitchScreen(new GameMode2Screen(Game)); // Switch to game mode 2 screen
     }
 
     public override void Draw(GameTime gameTime)
     {
         Game.SpriteBatch.Begin();
 
-        // Draw the background to fill the screen
-        Game.SpriteBatch.Draw(_backgroundTexture,
-            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
-
-        // Draw the logo with a scaling factor
-        Game.SpriteBatch.Draw(_logoTexture, new Vector2(_logoRect.X, _logoRect.Y), null, Color.White, 0f, Vector2.Zero,
-            LogoScaleFactor, SpriteEffects.None, 0f);
-
-        // Draw the game mode buttons
-        Game.SpriteBatch.Draw(_gameMode1ButtonTexture, _gameMode1ButtonRect,
-            _gameMode1ButtonRect.Contains(Game1.MouseState.Position) ? Color.LightGray : Color.White);
-
-        Game.SpriteBatch.Draw(_gameMode2ButtonTexture, _gameMode2ButtonRect,
-            _gameMode2ButtonRect.Contains(Game1.MouseState.Position) ? Color.LightGray : Color.White);
+        DrawBackground();
+        DrawLogo();
+        DrawButton(_gameMode1ButtonTexture, _gameMode1ButtonRect);
+        DrawButton(_gameMode2ButtonTexture, _gameMode2ButtonRect);
 
         Game.SpriteBatch.End();
+    }
+
+    private void DrawBackground()
+    {
+        Game.SpriteBatch.Draw(_backgroundTexture,
+            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
+    }
+
+    private void DrawLogo()
+    {
+        Game.SpriteBatch.Draw(_logoTexture, new Vector2(_logoRect.X, _logoRect.Y), null, Color.White, 0f, Vector2.Zero,
+            LogoScaleFactor, SpriteEffects.None, 0f);
+    }
+
+    private void DrawButton(Texture2D texture, Rectangle rectangle)
+    {
+        Game.SpriteBatch.Draw(texture, rectangle,
+            rectangle.Contains(Game1.MouseState.Position) ? Color.LightGray : Color.White);
     }
 }

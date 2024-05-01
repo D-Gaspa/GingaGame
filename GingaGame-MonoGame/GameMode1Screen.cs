@@ -16,9 +16,9 @@ public class GameMode1Screen : GameScreen
     private float _scoreFontScale;
     private Texture2D _scoreFontTexture;
     private string _scoreText;
+    private float _topScoresFontScale;
     private Texture2D _topScoresFontTexture;
     private string _topScoresText;
-    private float _topScoresFontScale;
 
     public GameMode1Screen(Game1 game) : base(game)
     {
@@ -26,9 +26,9 @@ public class GameMode1Screen : GameScreen
 
     public override void LoadContent()
     {
+        // Load the textures and fonts
         _backgroundTexture = Game.Content.Load<Texture2D>("Resources/Background2");
         _nextPlanetFontTexture = Game.Content.Load<Texture2D>("Resources/NextPlanetFont");
-        //_nextPlanetTexture = Game.Content.Load<Texture2D>("NextPlanet");
         _scoreFontTexture = Game.Content.Load<Texture2D>("Resources/ScoreFont");
         _evolutionCycleTexture = Game.Content.Load<Texture2D>("Resources/EvolutionCycle");
         _topScoresFontTexture = Game.Content.Load<Texture2D>("Resources/TopScoresFont");
@@ -39,8 +39,9 @@ public class GameMode1Screen : GameScreen
         _scoreFontScale = DesiredFontHeight / _scoreFontTexture.Height;
         _topScoresFontScale = DesiredFontHeight / (_topScoresFontTexture.Height - 18);
 
+        // Initialize the text values
         _scoreText = "0";
-        _topScoresText = "1. ...\n2. ...\n3. ...\n4. ...\n5. ..."; // replace with actual scores
+        _topScoresText = "1. ...\n2. ...\n3. ...\n4. ...\n5. ..."; // TODO: Replace with actual scores
     }
 
     public override void Update(GameTime gameTime)
@@ -52,31 +53,54 @@ public class GameMode1Screen : GameScreen
     {
         Game.SpriteBatch.Begin();
 
-        // Draw the background to fill the screen
+        DrawInterfaceElements();
+
+        Game.SpriteBatch.End();
+    }
+
+    private void DrawInterfaceElements()
+    {
+        DrawBackground();
+        DrawNextPlanet();
+        DrawScore();
+        DrawTopScores();
+        DrawEvolutionCycle();
+    }
+
+    private void DrawBackground()
+    {
         Game.SpriteBatch.Draw(_backgroundTexture,
             new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
+    }
 
-        // Draw the UI elements
-        // Next planet
+    private void DrawNextPlanet()
+    {
         Game.SpriteBatch.Draw(_nextPlanetFontTexture, new Vector2(65, 25), null, Color.White, 0, Vector2.Zero,
             _nextPlanetFontScale, SpriteEffects.None, 0);
-        //Game.SpriteBatch.Draw(_nextPlanetTexture, new Vector2(10, 10), Color.White);
+        // TODO: Draw the next planet texture
+    }
 
-        // Score
-        Game.SpriteBatch.Draw(_scoreFontTexture, new Vector2(65, 251), null, Color.White, 0, Vector2.Zero,
+    private void DrawScore()
+    {
+        // Draw the score text
+        Game.SpriteBatch.Draw(_scoreFontTexture, new Vector2(65, 281), null, Color.White, 0, Vector2.Zero,
             _scoreFontScale, SpriteEffects.None, 0);
-        
-        Game.SpriteBatch.DrawString(_font, _scoreText, new Vector2(190, 255), Color.White);
+        // Draw the actual score value
+        Game.SpriteBatch.DrawString(_font, _scoreText, new Vector2(190, 285), Color.White);
+    }
 
-        // Top scores
-        Game.SpriteBatch.Draw(_topScoresFontTexture, new Vector2(65, 350), null, Color.White, 0, Vector2.Zero,
+    private void DrawTopScores()
+    {
+        // Draw the top scores text
+        Game.SpriteBatch.Draw(_topScoresFontTexture, new Vector2(65, 365), null, Color.White, 0, Vector2.Zero,
             _topScoresFontScale, SpriteEffects.None, 0);
-        
+        // Draw the actual top scores
         Game.SpriteBatch.DrawString(_font, _topScoresText, new Vector2(65, 410), Color.White);
+    }
 
-        // Evolution cycle
+    private void DrawEvolutionCycle()
+    {
         Game.SpriteBatch.Draw(_evolutionCycleTexture, new Vector2(20, 610), null, Color.White, 0, Vector2.Zero,
             EvolutionCycleScaleFactor, SpriteEffects.None, 0);
-        Game.SpriteBatch.End();
     }
 }
