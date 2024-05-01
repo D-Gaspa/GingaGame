@@ -6,7 +6,7 @@ namespace GingaGame_MonoGame;
 
 public class MainMenuScreen : GameScreen
 {
-    private const float ScaleFactor = 0.35f;
+    private const float LogoScaleFactor = 0.35f;
     private Texture2D _backgroundTexture;
     private Rectangle _gameMode1ButtonRect;
     private Texture2D _gameMode1ButtonTexture;
@@ -30,8 +30,8 @@ public class MainMenuScreen : GameScreen
         _gameMode2ButtonTexture = Game.Content.Load<Texture2D>("Resources/GameMode2Button");
 
         // Set the position and size of the logo
-        _logoRect = new Rectangle(CenterX - (int)(_logoTexture.Width * ScaleFactor) / 2, 50,
-            (int)(_logoTexture.Width * ScaleFactor), (int)(_logoTexture.Height * ScaleFactor));
+        _logoRect = new Rectangle(CenterX - (int)(_logoTexture.Width * LogoScaleFactor) / 2, 50,
+            (int)(_logoTexture.Width * LogoScaleFactor), (int)(_logoTexture.Height * LogoScaleFactor));
 
         // Set the position and size of the buttons
         _gameMode1ButtonRect = new Rectangle(CenterX - 175, CenterY - 50, 350, 100);
@@ -62,7 +62,7 @@ public class MainMenuScreen : GameScreen
 
         // Draw the logo with a scaling factor
         Game.SpriteBatch.Draw(_logoTexture, new Vector2(_logoRect.X, _logoRect.Y), null, Color.White, 0f, Vector2.Zero,
-            ScaleFactor, SpriteEffects.None, 0f);
+            LogoScaleFactor, SpriteEffects.None, 0f);
 
         // Draw the game mode buttons
         Game.SpriteBatch.Draw(_gameMode1ButtonTexture, _gameMode1ButtonRect,
