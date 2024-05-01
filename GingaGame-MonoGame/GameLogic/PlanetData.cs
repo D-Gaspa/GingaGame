@@ -26,6 +26,21 @@ public class PlanetData
     }
 }
 
+public enum PlanetType
+{
+    Pluto,
+    Moon,
+    Mercury,
+    Mars,
+    Venus,
+    Earth,
+    Neptune,
+    Uranus,
+    Saturn,
+    Jupiter,
+    Sun
+}
+
 public static class PlanetSizes
 {
     public static Dictionary<int, float> Sizes { get; } = new()

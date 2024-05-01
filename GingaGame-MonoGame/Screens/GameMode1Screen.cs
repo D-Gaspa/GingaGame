@@ -14,11 +14,13 @@ public class GameMode1Screen : GameScreen
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
     private Texture2D _backgroundTexture;
+    private readonly Planet _currentPlanet;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
     private float _nextPlanetFontScale;
     private Texture2D _nextPlanetFontTexture;
     private Texture2D _nextPlanetTexture;
+    private readonly Scene _scene;
     private float _scoreFontScale;
     private Texture2D _scoreFontTexture;
     private string _scoreText;
@@ -34,6 +36,10 @@ public class GameMode1Screen : GameScreen
         _container = new Container();
         _score = new Score();
         _scoreboard = new Scoreboard(Mode);
+        _scene = new Scene();
+        _currentPlanet = new Planet(PlanetType.Earth, new Vector2(0, 0));
+
+        _scene.AddPlanet(_currentPlanet);
     }
 
     public override void LoadContent()
