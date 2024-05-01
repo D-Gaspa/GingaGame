@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using GingaGame_MonoGame.GameLogic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace GingaGame_MonoGame;
@@ -7,6 +8,7 @@ public class GameMode1Screen : GameScreen
 {
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
+    private readonly Container _container;
     private Texture2D _backgroundTexture;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
@@ -22,26 +24,39 @@ public class GameMode1Screen : GameScreen
 
     public GameMode1Screen(Game1 game) : base(game)
     {
+        _container = new Container();
     }
 
     public override void LoadContent()
     {
-        // Load the textures and fonts
-        _backgroundTexture = Game.Content.Load<Texture2D>("Resources/Background2");
-        _nextPlanetFontTexture = Game.Content.Load<Texture2D>("Resources/NextPlanetFont");
-        _scoreFontTexture = Game.Content.Load<Texture2D>("Resources/ScoreFont");
-        _evolutionCycleTexture = Game.Content.Load<Texture2D>("Resources/EvolutionCycle");
-        _topScoresFontTexture = Game.Content.Load<Texture2D>("Resources/TopScoresFont");
+        // Load the textures and font
+        _backgroundTexture = LoadTexture("Resources/Background2");
+        _nextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
+        _scoreFontTexture = LoadTexture("Resources/ScoreFont");
+        _evolutionCycleTexture = LoadTexture("Resources/EvolutionCycle");
+        _topScoresFontTexture = LoadTexture("Resources/TopScoresFont");
         _font = Game.Content.Load<SpriteFont>("MyFont");
 
         // Calculate the scale factors
-        _nextPlanetFontScale = DesiredFontHeight / _nextPlanetFontTexture.Height;
-        _scoreFontScale = DesiredFontHeight / _scoreFontTexture.Height;
-        _topScoresFontScale = DesiredFontHeight / (_topScoresFontTexture.Height - 18);
+        _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
+        _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
+        _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
 
-        // Initialize the text values
+        // Initialize the screen elements
         _scoreText = "0";
         _topScoresText = "1. ...\n2. ...\n3. ...\n4. ...\n5. ..."; // TODO: Replace with actual scores
+        _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
+            Game.GraphicsDevice.Viewport.Height);
+    }
+
+    private Texture2D LoadTexture(string path)
+    {
+        return Game.Content.Load<Texture2D>(path);
+    }
+
+    private static float CalculateScale(float height)
+    {
+        return DesiredFontHeight / height;
     }
 
     public override void Update(GameTime gameTime)
@@ -54,6 +69,7 @@ public class GameMode1Screen : GameScreen
         Game.SpriteBatch.Begin();
 
         DrawInterfaceElements();
+        _container.Draw(Game.SpriteBatch);
 
         Game.SpriteBatch.End();
     }

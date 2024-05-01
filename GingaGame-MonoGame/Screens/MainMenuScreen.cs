@@ -30,11 +30,15 @@ public class MainMenuScreen : GameScreen
 
     private void LoadTextures()
     {
-        // Load the textures
-        _backgroundTexture = Game.Content.Load<Texture2D>("Resources/Background");
-        _logoTexture = Game.Content.Load<Texture2D>("Resources/Logo");
-        _gameMode1ButtonTexture = Game.Content.Load<Texture2D>("Resources/GameMode1Button");
-        _gameMode2ButtonTexture = Game.Content.Load<Texture2D>("Resources/GameMode2Button");
+        _backgroundTexture = LoadTexture("Resources/Background");
+        _logoTexture = LoadTexture("Resources/Logo");
+        _gameMode1ButtonTexture = LoadTexture("Resources/GameMode1Button");
+        _gameMode2ButtonTexture = LoadTexture("Resources/GameMode2Button");
+    }
+
+    private Texture2D LoadTexture(string path)
+    {
+        return Game.Content.Load<Texture2D>(path);
     }
 
     private void SetupLayout()
