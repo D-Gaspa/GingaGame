@@ -6,8 +6,8 @@ namespace GingaGame_MonoGame.GameLogic;
 
 public class Scene
 {
-    private List<Planet> Planets { get; } = new();
-    private List<Floor> Floors { get; } = new();
+    public List<Planet> Planets { get; } = new();
+    public List<Floor> Floors { get; } = new();
 
     public void AddPlanet(Planet planet)
     {

@@ -8,9 +8,9 @@ public class Container
 {
     private const int VerticalTopMargin = 70;
     private Texture2D _lineTexture;
-    private Vector2 TopLeft { get; set; }
-    private Vector2 TopRight { get; set; }
-    private Vector2 BottomLeft { get; set; }
+    public Vector2 TopLeft { get; set; }
+    public Vector2 TopRight { get; set; }
+    public Vector2 BottomLeft { get; set; }
     private Vector2 BottomRight { get; set; }
 
     public void InitializeContainer(GraphicsDevice graphicsDevice, int displayWidth, int containerHeight)

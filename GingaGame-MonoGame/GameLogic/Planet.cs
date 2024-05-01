@@ -8,6 +8,8 @@ public class Planet : VerletPoint
     public Planet(PlanetType planetType, Vector2 position, bool hasCollided = false)
         : base(position, PlanetData.FromPlanetType(planetType).Size)
     {
+        PlanetType = planetType;
+
         var planetData = PlanetData.FromPlanetType(planetType);
         Radius = planetData.Size;
         Texture = planetData.Texture;
@@ -15,6 +17,7 @@ public class Planet : VerletPoint
         HasCollided = hasCollided;
     }
 
+    public PlanetType PlanetType { get; }
     public float Radius { get; }
     public int Points { get; private set; }
     public bool HasCollided { get; set; }

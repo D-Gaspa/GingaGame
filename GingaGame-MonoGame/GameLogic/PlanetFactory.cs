@@ -40,7 +40,7 @@ public class PlanetFactory
 
         _unlockedPlanets = _gameMode switch
         {
-            GameMode.Mode1 => new List<PlanetType> { PlanetType.Earth }, // Start with Earth
+            GameMode.Mode1 => new List<PlanetType> { PlanetType.Pluto }, // Start with Pluto
             GameMode.Mode2 => new List<PlanetType> { PlanetType.Sun }, // Start with Sun
             _ => throw new ArgumentException("Invalid game mode")
         };

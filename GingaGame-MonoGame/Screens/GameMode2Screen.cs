@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using GingaGame_MonoGame.GameLogic;
+using Microsoft.Xna.Framework;
 
 namespace GingaGame_MonoGame;
 
@@ -21,5 +23,15 @@ public class GameMode2Screen : GameScreen
     public override void Draw(GameTime gameTime)
     {
         // Draw your screen here
+    }
+
+    public Planet GetCurrentPlanet()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetCurrentPlanet(Planet newPlanet)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -11,18 +11,19 @@ public class GameMode1Screen : GameScreen
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
     private readonly Container _container;
+    private readonly Planet _currentPlanet;
+    private readonly PlanetFactory _planetFactory;
     private readonly Scene _scene;
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
     private Texture2D _backgroundTexture;
-    private readonly Planet _currentPlanet;
+    private CollisionHandler _collisionHandler;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
     private Planet _nextPlanet;
     private float _nextPlanetFontScale;
     private Texture2D _nextPlanetFontTexture;
     private Texture2D _nextPlanetTexture;
-    private PlanetFactory _planetFactory;
     private float _scoreFontScale;
     private Texture2D _scoreFontTexture;
     private string _scoreText;
@@ -41,6 +42,7 @@ public class GameMode1Screen : GameScreen
         _scene = new Scene();
         _currentPlanet = new Planet(PlanetType.Earth, new Vector2(0, 0));
         _planetFactory = new PlanetFactory(Mode);
+        _collisionHandler = new CollisionHandler(_scene, _planetFactory, _score, _container, Mode);
 
         _scene.AddPlanet(_currentPlanet);
         _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
