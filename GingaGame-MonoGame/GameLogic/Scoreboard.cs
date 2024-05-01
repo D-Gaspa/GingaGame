@@ -26,10 +26,10 @@ public class Scoreboard
     public void AddScore(string playerName, int score)
     {
         var newScore = new ScoreEntry(FormatPlayerName(playerName), score);
-        
+
         // Get the index of where the new score compares to lesser or equal scores
         var index = _scores.FindIndex(s => s.Score <= score);
-        
+
         // Insert the new score at the correct position
         _scores.Insert(index >= 0 ? index : _scores.Count, newScore);
 
@@ -54,7 +54,7 @@ public class Scoreboard
         _scores.AddRange(scoreEntries.Take(5));
     }
 
-    private IEnumerable<ScoreEntry> GetScoreEntriesFromFile(string scoreFile)
+    private static IEnumerable<ScoreEntry> GetScoreEntriesFromFile(string scoreFile)
     {
         using var storage = IsolatedStorageFile.GetUserStoreForApplication();
         if (!storage.FileExists(scoreFile))

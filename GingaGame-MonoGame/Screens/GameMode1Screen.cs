@@ -28,6 +28,9 @@ public class GameMode1Screen : GameScreen
 
     public GameMode1Screen(Game1 game) : base(game)
     {
+        // Set the content manager for the PlanetTextures class
+        PlanetTextures.SetContentManager(Game.Content);
+
         _container = new Container();
         _score = new Score();
         _scoreboard = new Scoreboard(Mode);
@@ -70,9 +73,11 @@ public class GameMode1Screen : GameScreen
     private void InitializeElements()
     {
         _scoreText = "0";
+
         // Get the top scores as a string
         _topScoresText = string.Join("\n",
             _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
+
         _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
             Game.GraphicsDevice.Viewport.Height);
     }
