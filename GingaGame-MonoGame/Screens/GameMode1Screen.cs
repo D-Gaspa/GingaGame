@@ -1,4 +1,5 @@
-﻿using GingaGame_MonoGame.GameLogic;
+﻿using System.Linq;
+using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -6,6 +7,7 @@ namespace GingaGame_MonoGame;
 
 public class GameMode1Screen : GameScreen
 {
+    private const GameMode Mode = GameMode.Mode1;
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
     private readonly Container _container;
@@ -21,10 +23,14 @@ public class GameMode1Screen : GameScreen
     private float _topScoresFontScale;
     private Texture2D _topScoresFontTexture;
     private string _topScoresText;
+    private readonly Score _score;
+    private readonly Scoreboard _scoreboard;
 
     public GameMode1Screen(Game1 game) : base(game)
     {
         _container = new Container();
+        _score = new Score();
+        _scoreboard = new Scoreboard(Mode);
     }
 
     public override void LoadContent()
@@ -41,10 +47,11 @@ public class GameMode1Screen : GameScreen
         _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
         _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
         _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
-
+            
         // Initialize the screen elements
         _scoreText = "0";
-        _topScoresText = "1. ...\n2. ...\n3. ...\n4. ...\n5. ..."; // TODO: Replace with actual scores
+        // Get the top scores as a string
+        _topScoresText = string.Join("\n", _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
         _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
             Game.GraphicsDevice.Viewport.Height);
     }
@@ -61,7 +68,11 @@ public class GameMode1Screen : GameScreen
 
     public override void Update(GameTime gameTime)
     {
-        // Update your screen here
+        if (_score.HasChanged)
+        {
+            _scoreText = "_score.CurrentScore}";
+            _score.HasChanged = false;
+        }
     }
 
     public override void Draw(GameTime gameTime)
