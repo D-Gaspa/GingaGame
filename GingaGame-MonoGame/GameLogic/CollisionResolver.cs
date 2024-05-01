@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace GingaGame_MonoGame.GameLogic;
 
-public class CollisionHandler
+public class CollisionResolver
 {
     private readonly Container _container;
     private readonly GameMode _gameMode;
     private readonly GameMode2Screen _gameMode2Screen;
     private readonly PlanetFactory _planetFactory;
-    private readonly List<Planet> _planets;
-    private readonly List<(Planet, Planet)> _potentialCollisionPairs = new();
     private readonly Scene _scene;
     private readonly Score _score;
 
-    public CollisionHandler(Scene scene, PlanetFactory planetFactory, Score score, Container container,
+    public bool NeedsNewCollisionCheck;
+
+    public CollisionResolver(Scene scene, PlanetFactory planetFactory, Score score, Container container,
         GameMode gameMode, GameMode2Screen gameMode2Screen = null)
     {
-        _planets = scene.Planets;
         _scene = scene;
         _planetFactory = planetFactory;
         _score = score;
@@ -29,68 +27,10 @@ public class CollisionHandler
         _gameMode2Screen = gameMode2Screen;
     }
 
-    public void CheckCollisions()
+    public bool HandleCollisions(List<(Planet, Planet)> collisionPairs)
     {
-        _potentialCollisionPairs.Clear();
-
-        // Step 1: Broad Phase
-        BroadPhaseCheck();
-
-        // Step 2: Narrow Phase
-        NarrowPhaseCheck();
-    }
-
-    private void BroadPhaseCheck()
-    {
-        for (var i = 0; i < _planets.Count; i++)
-        for (var j = i + 1; j < _planets.Count; j++)
-        {
-            var planet1 = _planets[i];
-            var planet2 = _planets[j];
-
-            // If the planets are pinned, they cannot collide
-            if (planet1.IsPinned || planet2.IsPinned) continue;
-
-            // Calculate bounding boxes
-            if (!DoBoundingBoxesIntersect(planet1, planet2)) continue; // No potential collision
-
-            // Potential collision - pass to Narrow Phase
-            _potentialCollisionPairs.Add((planet1, planet2));
-        }
-    }
-
-    private static bool DoBoundingBoxesIntersect(Planet planet1, Planet planet2)
-    {
-        var box1 = new RectangleF(planet1.Position.X - planet1.Radius, planet1.Position.Y - planet1.Radius,
-            planet1.Radius * 2, planet1.Radius * 2);
-        var box2 = new RectangleF(planet2.Position.X - planet2.Radius, planet2.Position.Y - planet2.Radius,
-            planet2.Radius * 2, planet2.Radius * 2);
-
-        // TODO: Check if RectangleF can be used in MonoGame
-
-        return box1.IntersectsWith(box2);
-    }
-
-    private void NarrowPhaseCheck()
-    {
-        // If there are no potential collision pairs, no need to check further
-        if (_potentialCollisionPairs.Count == 0) return;
-
-        // Create a copy of the list
-        var potentialCollisionPairsCopy = new List<(Planet, Planet)>(_potentialCollisionPairs);
-
-        // Iterate through pairs of planets that passed the broad phase
-        foreach (var (planet1, planet2) in potentialCollisionPairsCopy)
-        {
-            // Recalculate distance (more accurate, as in broad-phase it might be an overestimate)
-            var distanceX = planet1.Position.X - planet2.Position.X;
-            var distanceY = planet1.Position.Y - planet2.Position.Y;
-            var distanceSquared = distanceX * distanceX + distanceY * distanceY;
-            var sumOfRadiiSquared = (planet1.Radius + planet2.Radius) * (planet1.Radius + planet2.Radius);
-
-            if (distanceSquared <= sumOfRadiiSquared) // Collision detected
-                HandleCollision(planet1, planet2);
-        }
+        foreach (var (planet1, planet2) in collisionPairs) HandleCollision(planet1, planet2);
+        return NeedsNewCollisionCheck;
     }
 
     private void HandleCollision(Planet planet1, Planet planet2)
@@ -101,8 +41,8 @@ public class CollisionHandler
             // Handle same planet collision
             MergePlanets(planet1, planet2);
 
-            // Handle collisions again, as the new planet might collide with others
-            CheckCollisions();
+            // Set the flag to check for new collisions as the new planet might collide with others
+            NeedsNewCollisionCheck = true;
         }
         else
         {
@@ -298,7 +238,7 @@ public class CollisionHandler
     public bool IsGameOver()
     {
         // Check if a planet has passed the end line
-        return _planets.Any(planet =>
+        return _scene.Planets.Any(planet =>
             planet.Position.Y < _container.TopLeft.Y + planet.Radius && planet.HasCollided);
     }
 }
