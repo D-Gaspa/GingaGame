@@ -67,7 +67,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
         // Call the Draw method of the top screen
-        _screens.Peek().Draw(gameTime);
+        _screens.Peek().Draw();
 
         _desktop.Render();
 

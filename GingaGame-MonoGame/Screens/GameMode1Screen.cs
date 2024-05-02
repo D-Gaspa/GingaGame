@@ -2,6 +2,7 @@
 using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 using Container = GingaGame_MonoGame.GameLogic.Container;
 
@@ -12,17 +13,20 @@ public class GameMode1Screen : GameScreen
     private const GameMode Mode = GameMode.Mode1;
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
+    private const double ClickDelay = 0.5; // Delay in seconds
     private readonly CollisionManager _collisionManager;
     private readonly Container _container;
-    private readonly Planet _currentPlanet;
     private readonly GameStateHandler _gameStateHandler;
     private readonly PlanetFactory _planetFactory;
     private readonly Scene _scene;
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
     private Texture2D _backgroundTexture;
+    private Planet _currentPlanet;
+    private double _elapsedTime;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
+    private bool _isInputEnabled = true;
     private Planet _nextPlanet;
     private float _nextPlanetFontScale;
     private Texture2D _nextPlanetFontTexture;
@@ -58,14 +62,16 @@ public class GameMode1Screen : GameScreen
         _collisionManager = new CollisionManager(constraintHandler, Mode, _gameStateHandler,
             planetMergingService, _scene);
 
-        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(50, 50))
+        var middleX = Game.GraphicsDevice.Viewport.Width / 2;
+
+        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
         {
             IsPinned = true
         };
 
         _scene.AddPlanet(_currentPlanet);
 
-        _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
+        GenerateNextPlanet();
     }
 
     public override void LoadContent()
@@ -125,17 +131,57 @@ public class GameMode1Screen : GameScreen
         _score.ResetScore();
         UpdateScoreboardText();
         _planetFactory.InitializeDefaultPlanetByGameMode();
+        
+        _elapsedTime = 0;
+        _isInputEnabled = true;
 
         _currentPlanet.Position = new Vector2(0, 0);
         _currentPlanet.IsPinned = true;
 
         _scene.AddPlanet(_currentPlanet);
 
+        GenerateNextPlanet();
+    }
+
+    private void GenerateNextPlanet()
+    {
         _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
     public override void Update(GameTime gameTime)
     {
+        // Get the current mouse state
+        var mouseState = Mouse.GetState();
+
+        // Check if the left mouse button is pressed and input is enabled
+        if (mouseState.LeftButton == ButtonState.Pressed && _isInputEnabled)
+            // Check if the current planet is pinned
+            if (_currentPlanet.IsPinned)
+            {
+                UpdateCurrentPlanetPosition(mouseState);
+                _currentPlanet.IsPinned = false;
+
+                // Disable input
+                _isInputEnabled = false;
+            }
+
+        // If input is disabled, increment the elapsed time
+        if (!_isInputEnabled)
+        {
+            _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+
+            // If the elapsed time is greater than the delay, switch the planet and re-enable input
+            if (_elapsedTime >= ClickDelay)
+            {
+                SwitchPlanet();
+                _isInputEnabled = true;
+                _elapsedTime = 0;
+            }
+        }
+
+        // Check if the current planet is pinned
+        if (_currentPlanet.IsPinned) UpdateCurrentPlanetPosition(mouseState);
+
         // Update the planet positions
         _scene.Update();
 
@@ -144,20 +190,56 @@ public class GameMode1Screen : GameScreen
 
         if (_score.HasChanged)
         {
-            _scoreText = "_score.CurrentScore}";
+            _scoreText = _score.CurrentScore.ToString();
             _score.HasChanged = false;
         }
 
         _gameStateHandler.Update();
     }
 
-    public override void Draw(GameTime gameTime)
+    private void SwitchPlanet()
+    {
+        // Switch the current planet with the next planet
+        _currentPlanet = _nextPlanet;
+
+        // Pin the planet
+        _currentPlanet.IsPinned = true;
+
+        // Add the planet to the scene
+        _scene.AddPlanet(_currentPlanet);
+
+        // Generate the next planet
+        GenerateNextPlanet();
+    }
+
+    private void UpdateCurrentPlanetPosition(MouseState mouseState)
+    {
+        var x = mouseState.X;
+
+        if (x < _container.TopLeft.X + _currentPlanet.Radius)
+        {
+            _currentPlanet.Position.X = _container.TopLeft.X + _currentPlanet.Radius;
+            _currentPlanet.OldPosition.X = _container.TopLeft.X + _currentPlanet.Radius;
+        }
+        else if (x > _container.BottomRight.X - _currentPlanet.Radius)
+        {
+            _currentPlanet.Position.X = _container.BottomRight.X - _currentPlanet.Radius;
+            _currentPlanet.OldPosition.X = _container.BottomRight.X - _currentPlanet.Radius;
+        }
+        else
+        {
+            _currentPlanet.Position.X = x;
+            _currentPlanet.OldPosition.X = x;
+        }
+    }
+
+    public override void Draw()
     {
         Game.SpriteBatch.Begin();
 
         DrawInterfaceElements();
-        _container.Draw(Game.SpriteBatch);
         _scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
+        _container.Draw(Game.SpriteBatch);
         DrawNextPlanet();
 
         Game.SpriteBatch.End();
@@ -212,8 +294,8 @@ public class GameMode1Screen : GameScreen
     {
         _nextPlanetTexture = PlanetTextures.GetCachedTexture(_nextPlanet.PlanetType);
 
-        var imageWidth = _nextPlanet.Radius * 2.5f;
-        var imageHeight = _nextPlanet.Radius * 2.5f;
+        var imageWidth = _nextPlanet.Radius * 2;
+        var imageHeight = _nextPlanet.Radius * 2;
 
         // Calculate the middle X position of the "Next Planet" text
         var nextPlanetTextMiddleX = 65 + _nextPlanetFontTexture.Width * _nextPlanetFontScale / 2;

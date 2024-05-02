@@ -5,7 +5,7 @@ namespace GingaGame_MonoGame.GameLogic;
 public class VerletPoint
 {
     private const float Friction = 0.8f;
-    private readonly Vector2 _gravity = new(0, 0.9f);
+    private readonly Vector2 _gravity = new(0, 2.5f);
     public bool IsPinned;
     public Vector2 OldPosition;
     public Vector2 Position;

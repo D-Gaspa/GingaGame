@@ -14,13 +14,10 @@ public static class PlanetTextures
     {
         _contentManager = manager;
     }
-    
+
     public static void InitializePlanetTextures()
     {
-        foreach (var planetType in Enum.GetValues<PlanetType>())
-        {
-            GetCachedTexture(planetType);
-        }
+        foreach (var planetType in Enum.GetValues<PlanetType>()) GetCachedTexture(planetType);
     }
 
     public static Texture2D GetCachedTexture(PlanetType planetType)

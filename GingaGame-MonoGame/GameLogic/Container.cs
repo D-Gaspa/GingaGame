@@ -11,7 +11,7 @@ public class Container
     public Vector2 TopLeft { get; private set; }
     public Vector2 TopRight { get; private set; }
     public Vector2 BottomLeft { get; private set; }
-    private Vector2 BottomRight { get; set; }
+    public Vector2 BottomRight { get; set; }
 
     public void InitializeContainer(GraphicsDevice graphicsDevice, int displayWidth, int containerHeight,
         int verticalTopMargin = 70)
