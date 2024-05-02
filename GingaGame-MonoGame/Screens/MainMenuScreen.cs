@@ -1,12 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame;
 
 public class MainMenuScreen : GameScreen
 {
     private const float LogoScaleFactor = 0.35f;
+    private readonly Desktop _desktop;
     private Texture2D _backgroundTexture;
     private Rectangle _gameMode1ButtonRect;
     private Texture2D _gameMode1ButtonTexture;
@@ -15,8 +17,9 @@ public class MainMenuScreen : GameScreen
     private Rectangle _logoRect;
     private Texture2D _logoTexture;
 
-    public MainMenuScreen(Game1 game) : base(game)
+    public MainMenuScreen(Game1 game, Desktop desktop) : base(game)
     {
+        _desktop = desktop;
     }
 
     private int CenterX => Game.GraphicsDevice.Viewport.Width / 2;
@@ -58,7 +61,7 @@ public class MainMenuScreen : GameScreen
         if (Game1.MouseState.LeftButton != ButtonState.Pressed) return;
         if (_gameMode1ButtonRect.Contains(Game1.MouseState.Position))
             // Game mode 1 button was clicked
-            Game.SwitchScreen(new GameMode1Screen(Game)); // Switch to game mode 1 screen
+            Game.SwitchScreen(new GameMode1Screen(Game, _desktop)); // Switch to game mode 1 screen
         else if (_gameMode2ButtonRect.Contains(Game1.MouseState.Position))
             // Game mode 2 button was clicked
             Game.SwitchScreen(new GameMode2Screen(Game)); // Switch to game mode 2 screen
@@ -92,5 +95,10 @@ public class MainMenuScreen : GameScreen
     {
         Game.SpriteBatch.Draw(texture, rectangle,
             rectangle.Contains(Game1.MouseState.Position) ? Color.LightGray : Color.White);
+    }
+
+    public override void ResetGame()
+    {
+        // No game state to reset in the main menu
     }
 }

@@ -29,6 +29,13 @@ public class Scene
         Planets.Clear();
     }
 
+    public void Update()
+    {
+        // Update the planets
+        foreach (var planet in Planets)
+            planet.Update();
+    }
+
     public void Draw(SpriteBatch spriteBatch, float displayHeight, float yOffset = 0)
     {
         // Calculate the visible range

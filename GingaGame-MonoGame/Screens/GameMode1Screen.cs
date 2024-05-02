@@ -2,6 +2,8 @@
 using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Myra.Graphics2D.UI;
+using Container = GingaGame_MonoGame.GameLogic.Container;
 
 namespace GingaGame_MonoGame;
 
@@ -10,14 +12,15 @@ public class GameMode1Screen : GameScreen
     private const GameMode Mode = GameMode.Mode1;
     private const float DesiredFontHeight = 35;
     private const float EvolutionCycleScaleFactor = 0.4f;
+    private readonly CollisionManager _collisionManager;
     private readonly Container _container;
     private readonly Planet _currentPlanet;
+    private readonly GameStateHandler _gameStateHandler;
     private readonly PlanetFactory _planetFactory;
     private readonly Scene _scene;
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
     private Texture2D _backgroundTexture;
-    private CollisionManager _collisionManager;
     private Texture2D _evolutionCycleTexture;
     private SpriteFont _font;
     private Planet _nextPlanet;
@@ -31,7 +34,7 @@ public class GameMode1Screen : GameScreen
     private Texture2D _topScoresFontTexture;
     private string _topScoresText;
 
-    public GameMode1Screen(Game1 game) : base(game)
+    public GameMode1Screen(Game1 game, Desktop desktop) : base(game)
     {
         // Set the content manager for the PlanetTextures class
         PlanetTextures.SetContentManager(Game.Content);
@@ -40,9 +43,11 @@ public class GameMode1Screen : GameScreen
         _score = new Score();
         _scoreboard = new Scoreboard(Mode);
         _scene = new Scene();
-        _currentPlanet = new Planet(PlanetType.Earth, new Vector2(0, 0));
+        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(50, 50));
         _planetFactory = new PlanetFactory(Mode);
-        _collisionManager = new CollisionManager(_scene, _planetFactory, _score, _container, Mode);
+        _gameStateHandler = new GameStateHandler(_container, desktop, this, _score, _scoreboard);
+        _collisionManager = new CollisionManager(_container, Mode, _gameStateHandler, _planetFactory, _scene, _score,
+            null);
 
         _scene.AddPlanet(_currentPlanet);
         _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
@@ -86,12 +91,28 @@ public class GameMode1Screen : GameScreen
     {
         _scoreText = "0";
 
-        // Get the top scores as a string
-        _topScoresText = string.Join("\n",
-            _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
+        UpdateScoreboardText();
 
         _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
             Game.GraphicsDevice.Viewport.Height);
+    }
+
+    private void UpdateScoreboardText()
+    {
+        _topScoresText = string.Join("\n",
+            _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
+    }
+
+    public override void ResetGame()
+    {
+        _scene.ClearPlanets();
+        _score.ResetScore();
+        UpdateScoreboardText();
+        _planetFactory.InitializeDefaultPlanetByGameMode();
+        _currentPlanet.Position = new Vector2(0, 0);
+        _currentPlanet.IsPinned = true;
+        _scene.AddPlanet(_currentPlanet);
+        _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
     public override void Update(GameTime gameTime)
@@ -101,6 +122,12 @@ public class GameMode1Screen : GameScreen
             _scoreText = "_score.CurrentScore}";
             _score.HasChanged = false;
         }
+
+        _scene.Update();
+
+        _collisionManager.RunCollisions(8);
+
+        _gameStateHandler.Update();
     }
 
     public override void Draw(GameTime gameTime)
@@ -109,6 +136,7 @@ public class GameMode1Screen : GameScreen
 
         DrawInterfaceElements();
         _container.Draw(Game.SpriteBatch);
+        _scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
 
         Game.SpriteBatch.End();
     }

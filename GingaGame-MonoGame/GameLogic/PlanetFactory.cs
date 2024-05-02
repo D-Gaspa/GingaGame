@@ -34,7 +34,7 @@ public class PlanetFactory
         if (!_unlockedPlanets.Contains(planetType)) _unlockedPlanets.Add(planetType);
     }
 
-    private void InitializeDefaultPlanetByGameMode()
+    public void InitializeDefaultPlanetByGameMode()
     {
         _unlockedPlanets.Clear();
 

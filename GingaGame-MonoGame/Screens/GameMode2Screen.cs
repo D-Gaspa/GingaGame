@@ -25,6 +25,11 @@ public class GameMode2Screen : GameScreen
         // Draw your screen here
     }
 
+    public override void ResetGame()
+    {
+        throw new NotImplementedException();
+    }
+
     public Planet GetCurrentPlanet()
     {
         throw new NotImplementedException();

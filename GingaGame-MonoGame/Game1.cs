@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Myra;
+using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame;
 
@@ -9,6 +11,7 @@ public class Game1 : Game
 {
     private readonly GraphicsDeviceManager _graphics;
     private readonly Stack<GameScreen> _screens = new();
+    private Desktop _desktop;
     public SpriteBatch SpriteBatch;
 
     public Game1()
@@ -29,8 +32,14 @@ public class Game1 : Game
         // _graphics.IsFullScreen = true;
         _graphics.ApplyChanges();
 
+        // Set the Game instance for Myra
+        MyraEnvironment.Game = this;
+
+        _desktop = new Desktop();
+
         // Push the main menu screen to the stack
-        _screens.Push(new MainMenuScreen(this));
+        _screens.Push(new MainMenuScreen(this, _desktop));
+
         base.Initialize();
     }
 
@@ -59,6 +68,9 @@ public class Game1 : Game
 
         // Call the Draw method of the top screen
         _screens.Peek().Draw(gameTime);
+
+        _desktop.Render();
+
         base.Draw(gameTime);
     }
 

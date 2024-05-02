@@ -25,6 +25,7 @@
     <ItemGroup>
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303"/>
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303"/>
+        <PackageReference Include="Myra" Version="1.5.5"/>
     </ItemGroup>
     <ItemGroup>
         <Content Include="bin\Debug\net6.0\scores1.txt"/>

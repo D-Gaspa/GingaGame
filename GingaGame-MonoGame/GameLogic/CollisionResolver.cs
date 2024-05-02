@@ -10,20 +10,23 @@ public class CollisionResolver
     private readonly Container _container;
     private readonly GameMode _gameMode;
     private readonly GameMode2Screen _gameMode2Screen;
+    private readonly GameStateHandler _gameStateHandler;
     private readonly PlanetFactory _planetFactory;
     private readonly Scene _scene;
     private readonly Score _score;
 
     public bool NeedsNewCollisionCheck;
 
-    public CollisionResolver(Scene scene, PlanetFactory planetFactory, Score score, Container container,
-        GameMode gameMode, GameMode2Screen gameMode2Screen = null)
+    public CollisionResolver(Container container, GameMode gameMode, GameStateHandler gameStateHandler,
+        PlanetFactory planetFactory, Scene scene, Score score,
+        GameMode2Screen gameMode2Screen = null)
     {
-        _scene = scene;
-        _planetFactory = planetFactory;
-        _score = score;
         _container = container;
         _gameMode = gameMode;
+        _gameStateHandler = gameStateHandler;
+        _planetFactory = planetFactory;
+        _scene = scene;
+        _score = score;
         _gameMode2Screen = gameMode2Screen;
     }
 
@@ -39,7 +42,11 @@ public class CollisionResolver
         if (planet1.PlanetType == planet2.PlanetType)
         {
             // Handle same planet collision
-            MergePlanets(planet1, planet2);
+            var mergedPlanet = MergePlanets(planet1, planet2);
+
+            if (mergedPlanet == null) return; // No new planet to process
+
+            _gameStateHandler.CheckWinCondition(mergedPlanet);
 
             // Set the flag to check for new collisions as the new planet might collide with others
             NeedsNewCollisionCheck = true;
@@ -48,34 +55,40 @@ public class CollisionResolver
         {
             // Handle different planet collision
             HandleDifferentPlanetCollision(planet1, planet2);
+
+            // Check if the game is over
+            _gameStateHandler.CheckGameEndConditions(planet1);
+            _gameStateHandler.CheckGameEndConditions(planet2);
         }
     }
 
-    private void MergePlanets(Planet planet1, Planet planet2)
+    private Planet MergePlanets(Planet planet1, Planet planet2)
     {
         _scene.RemovePlanet(planet1);
         _scene.RemovePlanet(planet2);
 
         // Unlock new planet (if needed)
-        if (!UnlockNextPlanetType(planet1, planet2)) return;
+        if (!UnlockNextPlanetType(planet1, planet2)) return null;
 
         // Create a new planet
-        var newPlanet = CreateMergedPlanet(planet1, planet2);
+        var mergedPlanet = CreateMergedPlanet(planet1, planet2);
 
         // Update the current planet in GameMode2 if needed
         if (_gameMode == GameMode.Mode2)
         {
             var currentPlanet = _gameMode2Screen.GetCurrentPlanet();
             if (currentPlanet == planet1 || currentPlanet == planet2)
-                _gameMode2Screen.SetCurrentPlanet(newPlanet);
+                _gameMode2Screen.SetCurrentPlanet(mergedPlanet);
         }
 
         // Add the new planet to the scene
-        _scene.AddPlanet(newPlanet);
+        _scene.AddPlanet(mergedPlanet);
 
         // Update scores for game mode 1
-        if (_gameMode != GameMode.Mode1) return;
-        UpdateScoreWithPlanetPoints(newPlanet.Points);
+        if (_gameMode == GameMode.Mode1)
+            UpdateScoreWithPlanetPoints(mergedPlanet.Points);
+
+        return mergedPlanet;
     }
 
     private bool UnlockNextPlanetType(Planet planet1, Planet planet2)

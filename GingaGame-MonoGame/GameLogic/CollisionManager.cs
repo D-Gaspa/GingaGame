@@ -5,14 +5,20 @@ public class CollisionManager
     private readonly CollisionDetector _detector;
     private readonly CollisionResolver _resolver;
 
-    public CollisionManager(Scene scene, PlanetFactory planetFactory, Score score, Container container,
-        GameMode gameMode, GameMode2Screen gameMode2Screen = null)
+    public CollisionManager(Container container, GameMode gameMode, GameStateHandler gameStateHandler,
+        PlanetFactory planetFactory, Scene scene, Score score, GameMode2Screen gameMode2Screen)
     {
         _detector = new CollisionDetector(scene.Planets);
-        _resolver = new CollisionResolver(scene, planetFactory, score, container, gameMode, gameMode2Screen);
+        _resolver = new CollisionResolver(container, gameMode, gameStateHandler, planetFactory, scene, score,
+            gameMode2Screen);
     }
 
-    public void RunCollisions()
+    public void RunCollisions(int iterations)
+    {
+        for (var i = 0; i < iterations; i++) RunCollisions();
+    }
+
+    private void RunCollisions()
     {
         bool needsNewCollisionCheck;
 
