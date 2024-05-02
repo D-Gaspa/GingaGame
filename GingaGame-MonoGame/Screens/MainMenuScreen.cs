@@ -67,7 +67,7 @@ public class MainMenuScreen : GameScreen
             Game.SwitchScreen(new GameMode2Screen(Game)); // Switch to game mode 2 screen
     }
 
-    public override void Draw(GameTime gameTime)
+    public override void Draw()
     {
         Game.SpriteBatch.Begin();
 

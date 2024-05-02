@@ -20,7 +20,7 @@ public class GameMode2Screen : GameScreen
         // Update your screen here
     }
 
-    public override void Draw(GameTime gameTime)
+    public override void Draw()
     {
         // Draw your screen here
     }

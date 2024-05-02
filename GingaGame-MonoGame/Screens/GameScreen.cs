@@ -13,6 +13,6 @@ public abstract class GameScreen
 
     public abstract void LoadContent();
     public abstract void Update(GameTime gameTime);
-    public abstract void Draw(GameTime gameTime);
+    public abstract void Draw();
     public abstract void ResetGame();
 }

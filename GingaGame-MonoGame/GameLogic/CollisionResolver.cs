@@ -13,13 +13,6 @@ public class CollisionResolver
     private readonly PlanetMergingService _planetMergingService;
 
     /// <summary>
-    ///     Flag indicating whether there is a need for a subsequent collision check. Set to true when
-    ///     a collision results in the merge of two planets, potentially creating a situation where the
-    ///     newly formed planet could be colliding with an existing one.
-    /// </summary>
-    public bool NeedsNewCollisionCheck;
-
-    /// <summary>
     ///     Constructor for the CollisionResolver class.
     ///     All dependencies are passed through this constructor and stored for use in the class methods.
     /// </summary>
@@ -36,11 +29,9 @@ public class CollisionResolver
     ///     It traverses all the passed pairs of potentially colliding planets and handles each collision.
     /// </summary>
     /// <param name="collisionPairs">List of pairs of potentially colliding planets.</param>
-    /// <returns>A boolean indicating whether another round of collision checks is necessary.</returns>
-    public bool HandleCollisions(List<(Planet, Planet)> collisionPairs)
+    public void HandleCollisions(List<(Planet, Planet)> collisionPairs)
     {
         foreach (var (planet1, planet2) in collisionPairs) HandleCollision(planet1, planet2);
-        return NeedsNewCollisionCheck;
     }
 
     /// <summary>
@@ -61,9 +52,6 @@ public class CollisionResolver
             if (mergedPlanet == null) return; // No new planet to process
 
             _gameStateHandler.CheckWinCondition(mergedPlanet);
-
-            // Set the flag to check for new collisions as the new planet might collide with others
-            NeedsNewCollisionCheck = true;
         }
         else
         {

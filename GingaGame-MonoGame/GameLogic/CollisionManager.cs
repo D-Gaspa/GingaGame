@@ -48,7 +48,7 @@ public class CollisionManager
             RunCollisions();
         }
     }
-    
+
     /// <summary>
     ///     Checks all the planet's constraints.
     /// </summary>
@@ -67,15 +67,7 @@ public class CollisionManager
     /// </summary>
     private void RunCollisions()
     {
-        bool needsNewCollisionCheck;
-
-        do
-        {
-            var potentialCollisions = _detector.CheckCollisions();
-            needsNewCollisionCheck =
-                _resolver.HandleCollisions(potentialCollisions);
-        } while (needsNewCollisionCheck);
-
-        _resolver.NeedsNewCollisionCheck = false; // Reset the flag for the next update
+        var potentialCollisions = _detector.CheckCollisions();
+        _resolver.HandleCollisions(potentialCollisions);
     }
 }
