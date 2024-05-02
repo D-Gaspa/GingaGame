@@ -3,16 +3,29 @@ using System.Drawing;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     The CollisionDetector class is used to check if collisions are happening between any of the Planets.
+/// </summary>
 public class CollisionDetector
 {
     private readonly List<Planet> _planets;
     private readonly List<(Planet, Planet)> _potentialCollisionPairs = new();
 
+    /// <summary>
+    ///     Initializes a new instance of the CollisionDetector class.
+    /// </summary>
+    /// <param name="planets">List of the planets in the current game scene.</param>
     public CollisionDetector(List<Planet> planets)
     {
         _planets = planets;
     }
 
+    /// <summary>
+    ///     Checks for collisions and return a list of pairs of planets that are colliding.
+    /// </summary>
+    /// <returns>
+    ///     Returns a list tuples, where each tuple contains two planets that are colliding.
+    /// </returns>
     public List<(Planet, Planet)> CheckCollisions()
     {
         _potentialCollisionPairs.Clear();
@@ -20,6 +33,9 @@ public class CollisionDetector
         return NarrowPhaseCheck();
     }
 
+    /// <summary>
+    ///     Implements the Broad Phase of the collision detection using Axis-Aligned Bounding Boxes (AABB).
+    /// </summary>
     private void BroadPhaseCheck()
     {
         for (var i = 0; i < _planets.Count; i++)
@@ -39,6 +55,12 @@ public class CollisionDetector
         }
     }
 
+    /// <summary>
+    ///     Checks if two planets bounding boxes intersect with each other.
+    /// </summary>
+    /// <param name="planet1">The first planet.</param>
+    /// <param name="planet2">The second planet.</param>
+    /// <returns>Returns true if boxes intersect, false otherwise.</returns>
     private static bool DoBoundingBoxesIntersect(Planet planet1, Planet planet2)
     {
         var box1 = new RectangleF(planet1.Position.X - planet1.Radius, planet1.Position.Y - planet1.Radius,
@@ -46,11 +68,15 @@ public class CollisionDetector
         var box2 = new RectangleF(planet2.Position.X - planet2.Radius, planet2.Position.Y - planet2.Radius,
             planet2.Radius * 2, planet2.Radius * 2);
 
-        // TODO: Check if RectangleF can be used in MonoGame
-
         return box1.IntersectsWith(box2);
     }
 
+    /// <summary>
+    ///     Implements the Narrow Phase of the collision detection by checking the real shapes.
+    /// </summary>
+    /// <returns>
+    ///     Returns a list tuples, where each tuple contains two planets that are colliding.
+    /// </returns>
     private List<(Planet, Planet)> NarrowPhaseCheck()
     {
         // Initialize list to store pairs of planets that are colliding

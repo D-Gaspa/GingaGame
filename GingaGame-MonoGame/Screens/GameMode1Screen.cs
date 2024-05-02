@@ -39,18 +39,30 @@ public class GameMode1Screen : GameScreen
         // Set the content manager for the PlanetTextures class
         PlanetTextures.SetContentManager(Game.Content);
 
+        _scene = new Scene();
+
         _container = new Container();
+
+        _planetFactory = new PlanetFactory(Mode);
+
         _score = new Score();
         _scoreboard = new Scoreboard(Mode);
-        _scene = new Scene();
-        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(50, 50));
-        _planetFactory = new PlanetFactory(Mode);
+
         var userInterfaceCreator = new UserInterfaceCreator(desktop);
         _gameStateHandler = new GameStateHandler(_container, this, _score, _scoreboard, userInterfaceCreator);
-        _collisionManager = new CollisionManager(_container, Mode, _gameStateHandler, _planetFactory, _scene, _score,
-            null);
+
+        var planetMergingService = new PlanetMergingService(_scene, Mode, _planetFactory, _score);
+        var constraintHandler = new ConstraintHandler(_container, Mode, _scene);
+        _collisionManager = new CollisionManager(constraintHandler, Mode, _gameStateHandler,
+            planetMergingService, _scene);
+
+        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(50, 50))
+        {
+            IsPinned = true
+        };
 
         _scene.AddPlanet(_currentPlanet);
+
         _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
@@ -106,13 +118,17 @@ public class GameMode1Screen : GameScreen
 
     public override void ResetGame()
     {
+        // Reset the game state and initialize the game again
         _scene.ClearPlanets();
         _score.ResetScore();
         UpdateScoreboardText();
         _planetFactory.InitializeDefaultPlanetByGameMode();
+
         _currentPlanet.Position = new Vector2(0, 0);
         _currentPlanet.IsPinned = true;
+
         _scene.AddPlanet(_currentPlanet);
+
         _nextPlanet = _planetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
@@ -124,9 +140,11 @@ public class GameMode1Screen : GameScreen
             _score.HasChanged = false;
         }
 
+        // Update the planet positions
         _scene.Update();
 
-        _collisionManager.RunCollisions(8);
+        // Check for collisions
+        _collisionManager.RunCollisions(5);
 
         _gameStateHandler.Update();
     }
