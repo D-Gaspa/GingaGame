@@ -37,7 +37,7 @@ public class CollisionManager
     /// <remarks>
     ///     Too many iterations -> more stable, slower and less responsive.
     ///     Too few iterations -> less stable, faster and more responsive.
-    ///     5 iterations is a good balance for this game.
+    ///     8 iterations is a good balance for this game.
     /// </remarks>
     /// <param name="iterations">The number of times the collision logic should repeat.</param>
     public void RunCollisions(int iterations)

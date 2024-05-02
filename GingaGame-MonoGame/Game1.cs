@@ -29,7 +29,7 @@ public class Game1 : Game
         // Set the game to fullscreen
         _graphics.PreferredBackBufferWidth = GraphicsDevice.DisplayMode.Width;
         _graphics.PreferredBackBufferHeight = GraphicsDevice.DisplayMode.Height;
-        //_graphics.IsFullScreen = true;
+        _graphics.IsFullScreen = true;
         _graphics.ApplyChanges();
 
         // Set the Game instance for Myra

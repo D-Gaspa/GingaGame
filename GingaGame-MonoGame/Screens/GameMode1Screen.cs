@@ -1,7 +1,5 @@
-﻿using System.Linq;
-using GingaGame_MonoGame.GameLogic;
+﻿using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 using Container = GingaGame_MonoGame.GameLogic.Container;
@@ -11,8 +9,6 @@ namespace GingaGame_MonoGame;
 public class GameMode1Screen : GameScreen
 {
     private const GameMode Mode = GameMode.Mode1;
-    private const float DesiredFontHeight = 35;
-    private const float EvolutionCycleScaleFactor = 0.4f;
     private const double ClickDelay = 0.5; // Delay in seconds
     private readonly CollisionManager _collisionManager;
     private readonly Container _container;
@@ -21,22 +17,11 @@ public class GameMode1Screen : GameScreen
     private readonly Scene _scene;
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
-    private Texture2D _backgroundTexture;
+    private readonly GameUserInterfaceManager _userInterfaceManager;
     private Planet _currentPlanet;
     private double _elapsedTime;
-    private Texture2D _evolutionCycleTexture;
-    private SpriteFont _font;
     private bool _isInputEnabled = true;
     private Planet _nextPlanet;
-    private float _nextPlanetFontScale;
-    private Texture2D _nextPlanetFontTexture;
-    private Texture2D _nextPlanetTexture;
-    private float _scoreFontScale;
-    private Texture2D _scoreFontTexture;
-    private string _scoreText;
-    private float _topScoresFontScale;
-    private Texture2D _topScoresFontTexture;
-    private string _topScoresText;
 
     public GameMode1Screen(Game1 game, Desktop desktop) : base(game)
     {
@@ -44,6 +29,8 @@ public class GameMode1Screen : GameScreen
         PlanetTextures.SetContentManager(Game.Content);
 
         PlanetTextures.InitializePlanetTextures();
+
+        _userInterfaceManager = new GameUserInterfaceManager(game, Mode);
 
         _scene = new Scene();
 
@@ -62,16 +49,7 @@ public class GameMode1Screen : GameScreen
         _collisionManager = new CollisionManager(constraintHandler, Mode, _gameStateHandler,
             planetMergingService, _scene);
 
-        var middleX = Game.GraphicsDevice.Viewport.Width / 2;
-
-        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
-        {
-            IsPinned = true
-        };
-
-        _scene.AddPlanet(_currentPlanet);
-
-        GenerateNextPlanet();
+        SetupPlanetsAndScene();
     }
 
     private bool IsGameOver => _gameStateHandler.IsGameOver;
@@ -79,52 +57,16 @@ public class GameMode1Screen : GameScreen
 
     public override void LoadContent()
     {
-        LoadTexturesAndFont();
-        CalculateScales();
+        _userInterfaceManager.LoadContent();
         InitializeElements();
-    }
-
-    private void LoadTexturesAndFont()
-    {
-        _backgroundTexture = LoadTexture("Resources/Background2");
-        _nextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
-        _scoreFontTexture = LoadTexture("Resources/ScoreFont");
-        _evolutionCycleTexture = LoadTexture("Resources/EvolutionCycle");
-        _topScoresFontTexture = LoadTexture("Resources/TopScoresFont");
-        _font = Game.Content.Load<SpriteFont>("MyFont");
-    }
-
-    private Texture2D LoadTexture(string path)
-    {
-        return Game.Content.Load<Texture2D>(path);
-    }
-
-    private static float CalculateScale(float height)
-    {
-        return DesiredFontHeight / height;
-    }
-
-    private void CalculateScales()
-    {
-        _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
-        _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
-        _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
     }
 
     private void InitializeElements()
     {
-        _scoreText = "0";
-
-        UpdateScoreboardText();
+        _userInterfaceManager.Initialize(_scoreboard);
 
         _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
             Game.GraphicsDevice.Viewport.Height);
-    }
-
-    private void UpdateScoreboardText()
-    {
-        _topScoresText = string.Join("\n",
-            _scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
     }
 
     public override void ResetGame()
@@ -133,28 +75,27 @@ public class GameMode1Screen : GameScreen
         _scene.ClearPlanets();
         _score.ResetScore();
         _planetFactory.InitializeDefaultPlanetByGameMode();
-
         _elapsedTime = 0;
+        SetupPlanetsAndScene();
+        _gameStateHandler.IsGameOver = false;
+    }
 
+    private void SetupPlanetsAndScene()
+    {
         var middleX = Game.GraphicsDevice.Viewport.Width / 2;
-
         _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
         {
             IsPinned = true
         };
-
         _scene.AddPlanet(_currentPlanet);
-
         GenerateNextPlanet();
-
-        _gameStateHandler.IsGameOver = false;
     }
 
     public override void ResumeGame()
     {
         _isInputEnabled = true;
 
-        UpdateScoreboardText();
+        _userInterfaceManager.UpdateScoreboardText(_scoreboard);
 
         _gameStateHandler.ResumeGame();
     }
@@ -175,31 +116,11 @@ public class GameMode1Screen : GameScreen
         // Get the current mouse state
         var mouseState = Mouse.GetState();
 
-        // Check if the left mouse button is pressed and input is enabled
-        if (mouseState.LeftButton == ButtonState.Pressed && _isInputEnabled && !IsGameOver)
-            // Check if the current planet is pinned
-            if (_currentPlanet.IsPinned)
-            {
-                UpdateCurrentPlanetPosition(mouseState);
-                _currentPlanet.IsPinned = false;
-
-                // Disable input
-                _isInputEnabled = false;
-            }
+        // Handle mouse click
+        HandleMouseClick(mouseState);
 
         // If input is disabled (and the game is not paused), increment the elapsed time
-        if (!_isInputEnabled && !IsGamePaused)
-        {
-            _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
-
-            // If the elapsed time is greater than the delay, switch the planet and re-enable input
-            if (_elapsedTime >= ClickDelay && !IsGameOver)
-            {
-                SwitchPlanet();
-                _isInputEnabled = true;
-                _elapsedTime = 0;
-            }
-        }
+        if (!_isInputEnabled && !IsGamePaused) HandleElapsedTime(gameTime);
 
         // Check if the current planet is pinned
         if (_currentPlanet.IsPinned) UpdateCurrentPlanetPosition(mouseState);
@@ -208,15 +129,35 @@ public class GameMode1Screen : GameScreen
         _scene.Update();
 
         // Check for collisions
-        _collisionManager.RunCollisions(5);
+        _collisionManager.RunCollisions(8);
 
-        if (_score.HasChanged)
-        {
-            _scoreText = _score.CurrentScore.ToString();
-            _score.HasChanged = false;
-        }
+        // Update the score if it has changed
+        UpdateScoreIfChanged();
 
         _gameStateHandler.Update();
+    }
+
+    private void HandleMouseClick(MouseState mouseState)
+    {
+        // Check if the left mouse button is pressed and input is enabled
+        if (mouseState.LeftButton != ButtonState.Pressed || !_isInputEnabled || IsGameOver) return;
+        if (!_currentPlanet.IsPinned) return;
+
+        UpdateCurrentPlanetPosition(mouseState);
+        _currentPlanet.IsPinned = false;
+
+        // Disable input
+        _isInputEnabled = false;
+    }
+
+    private void HandleElapsedTime(GameTime gameTime)
+    {
+        _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+        // If the elapsed time is greater than the delay, switch the planet and re-enable input
+        if (!(_elapsedTime >= ClickDelay) || IsGameOver) return;
+        SwitchPlanet();
+        _isInputEnabled = true;
+        _elapsedTime = 0;
     }
 
     private void SwitchPlanet()
@@ -238,6 +179,9 @@ public class GameMode1Screen : GameScreen
     {
         var x = mouseState.X;
 
+        // Check if the planet is out of bounds
+        // If it is, set the position to the closest edge of the container
+        // Otherwise, set the position to the mouse's X coordinate
         if (x < _container.TopLeft.X + _currentPlanet.Radius)
         {
             _currentPlanet.Position.X = _container.TopLeft.X + _currentPlanet.Radius;
@@ -255,89 +199,29 @@ public class GameMode1Screen : GameScreen
         }
     }
 
+    private void UpdateScoreIfChanged()
+    {
+        if (!_score.HasChanged) return;
+        _userInterfaceManager.ScoreText = _score.CurrentScore.ToString();
+        _score.HasChanged = false;
+    }
+
     public override void Draw()
     {
         Game.SpriteBatch.Begin();
 
-        DrawInterfaceElements();
+        // Draw the user interface elements
+        _userInterfaceManager.DrawInterfaceElements();
+
+        // Draw the scene (planets)
         _scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
+
+        // Draw the container
         _container.Draw(Game.SpriteBatch);
-        DrawNextPlanet();
+
+        // Draw the next planet
+        _userInterfaceManager.DrawNextPlanet(_nextPlanet);
 
         Game.SpriteBatch.End();
-    }
-
-    private void DrawInterfaceElements()
-    {
-        DrawBackground();
-        DrawNextPlanetText();
-        DrawScore();
-        DrawTopScores();
-        DrawEvolutionCycle();
-    }
-
-    private void DrawBackground()
-    {
-        Game.SpriteBatch.Draw(_backgroundTexture,
-            new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
-    }
-
-    private void DrawNextPlanetText()
-    {
-        Game.SpriteBatch.Draw(_nextPlanetFontTexture, new Vector2(65, 25), null, Color.White, 0, Vector2.Zero,
-            _nextPlanetFontScale, SpriteEffects.None, 0);
-    }
-
-    private void DrawScore()
-    {
-        // Draw the score text
-        Game.SpriteBatch.Draw(_scoreFontTexture, new Vector2(65, 281), null, Color.White, 0, Vector2.Zero,
-            _scoreFontScale, SpriteEffects.None, 0);
-        // Draw the actual score value
-        Game.SpriteBatch.DrawString(_font, _scoreText, new Vector2(190, 285), Color.White);
-    }
-
-    private void DrawTopScores()
-    {
-        // Draw the top scores text
-        Game.SpriteBatch.Draw(_topScoresFontTexture, new Vector2(65, 365), null, Color.White, 0, Vector2.Zero,
-            _topScoresFontScale, SpriteEffects.None, 0);
-        // Draw the actual top scores
-        Game.SpriteBatch.DrawString(_font, _topScoresText, new Vector2(65, 410), Color.White);
-    }
-
-    private void DrawEvolutionCycle()
-    {
-        Game.SpriteBatch.Draw(_evolutionCycleTexture, new Vector2(20, 610), null, Color.White, 0, Vector2.Zero,
-            EvolutionCycleScaleFactor, SpriteEffects.None, 0);
-    }
-
-    private void DrawNextPlanet()
-    {
-        _nextPlanetTexture = PlanetTextures.GetCachedTexture(_nextPlanet.PlanetType);
-
-        var imageWidth = _nextPlanet.Radius * 2;
-        var imageHeight = _nextPlanet.Radius * 2;
-
-        // Calculate the middle X position of the "Next Planet" text
-        var nextPlanetTextMiddleX = 65 + _nextPlanetFontTexture.Width * _nextPlanetFontScale / 2;
-
-        // Calculate the Y position of the "Score" text
-        const int scoreTextY = 281;
-
-        // Calculate the Y position of the "Next Planet" text
-        var nextPlanetTextY = 25 + _nextPlanetFontTexture.Height * _nextPlanetFontScale;
-
-        // Calculate the middle Y position
-        var middleY = (scoreTextY + nextPlanetTextY) / 2;
-
-        // Calculate the position for the next planet
-        // The X position is the middle X position of the "Next Planet" text minus half of the planet's width
-        // The Y position is the middle Y position
-        var nextPlanetPosition = new Vector2(nextPlanetTextMiddleX - imageWidth / 2, middleY);
-
-        Game.SpriteBatch.Draw(_nextPlanetTexture,
-            new Rectangle((int)nextPlanetPosition.X, (int)(nextPlanetPosition.Y - imageHeight / 2),
-                (int)imageWidth, (int)imageHeight), Color.White);
     }
 }
