@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,6 +13,14 @@ public static class PlanetTextures
     public static void SetContentManager(ContentManager manager)
     {
         _contentManager = manager;
+    }
+    
+    public static void InitializePlanetTextures()
+    {
+        foreach (var planetType in Enum.GetValues<PlanetType>())
+        {
+            GetCachedTexture(planetType);
+        }
     }
 
     public static Texture2D GetCachedTexture(PlanetType planetType)

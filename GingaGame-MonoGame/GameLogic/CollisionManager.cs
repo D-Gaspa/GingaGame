@@ -34,6 +34,11 @@ public class CollisionManager
     /// <summary>
     ///     Runs collision detection and reaction logic according to the specified number of iterations.
     /// </summary>
+    /// <remarks>
+    ///     Too many iterations -> more stable, slower and less responsive.
+    ///     Too few iterations -> less stable, faster and more responsive.
+    ///     5 iterations is a good balance for this game.
+    /// </remarks>
     /// <param name="iterations">The number of times the collision logic should repeat.</param>
     public void RunCollisions(int iterations)
     {
@@ -41,6 +46,19 @@ public class CollisionManager
         {
             CheckConstraints();
             RunCollisions();
+        }
+    }
+    
+    /// <summary>
+    ///     Checks all the planet's constraints.
+    /// </summary>
+    private void CheckConstraints()
+    {
+        foreach (var planet in _scene.Planets)
+        {
+            ConstraintHandler.ScreenConstraints(planet);
+            _constraintHandler.ContainerConstraints(planet);
+            if (_gameMode == GameMode.Mode2) _constraintHandler.FloorConstraints(planet);
         }
     }
 
@@ -59,18 +77,5 @@ public class CollisionManager
         } while (needsNewCollisionCheck);
 
         _resolver.NeedsNewCollisionCheck = false; // Reset the flag for the next update
-    }
-
-    /// <summary>
-    ///     Checks all the planet's constraints.
-    /// </summary>
-    private void CheckConstraints()
-    {
-        foreach (var planet in _scene.Planets)
-        {
-            ConstraintHandler.ScreenConstraints(planet);
-            _constraintHandler.ContainerConstraints(planet);
-            if (_gameMode == GameMode.Mode2) _constraintHandler.FloorConstraints(planet);
-        }
     }
 }

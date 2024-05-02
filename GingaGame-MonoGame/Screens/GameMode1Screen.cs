@@ -39,6 +39,8 @@ public class GameMode1Screen : GameScreen
         // Set the content manager for the PlanetTextures class
         PlanetTextures.SetContentManager(Game.Content);
 
+        PlanetTextures.InitializePlanetTextures();
+
         _scene = new Scene();
 
         _container = new Container();
@@ -134,17 +136,17 @@ public class GameMode1Screen : GameScreen
 
     public override void Update(GameTime gameTime)
     {
-        if (_score.HasChanged)
-        {
-            _scoreText = "_score.CurrentScore}";
-            _score.HasChanged = false;
-        }
-
         // Update the planet positions
         _scene.Update();
 
         // Check for collisions
         _collisionManager.RunCollisions(5);
+
+        if (_score.HasChanged)
+        {
+            _scoreText = "_score.CurrentScore}";
+            _score.HasChanged = false;
+        }
 
         _gameStateHandler.Update();
     }
@@ -156,6 +158,7 @@ public class GameMode1Screen : GameScreen
         DrawInterfaceElements();
         _container.Draw(Game.SpriteBatch);
         _scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
+        DrawNextPlanet();
 
         Game.SpriteBatch.End();
     }
@@ -163,7 +166,7 @@ public class GameMode1Screen : GameScreen
     private void DrawInterfaceElements()
     {
         DrawBackground();
-        DrawNextPlanet();
+        DrawNextPlanetText();
         DrawScore();
         DrawTopScores();
         DrawEvolutionCycle();
@@ -175,11 +178,10 @@ public class GameMode1Screen : GameScreen
             new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
     }
 
-    private void DrawNextPlanet()
+    private void DrawNextPlanetText()
     {
         Game.SpriteBatch.Draw(_nextPlanetFontTexture, new Vector2(65, 25), null, Color.White, 0, Vector2.Zero,
             _nextPlanetFontScale, SpriteEffects.None, 0);
-        // TODO: Draw the next planet texture
     }
 
     private void DrawScore()
@@ -204,5 +206,34 @@ public class GameMode1Screen : GameScreen
     {
         Game.SpriteBatch.Draw(_evolutionCycleTexture, new Vector2(20, 610), null, Color.White, 0, Vector2.Zero,
             EvolutionCycleScaleFactor, SpriteEffects.None, 0);
+    }
+
+    private void DrawNextPlanet()
+    {
+        _nextPlanetTexture = PlanetTextures.GetCachedTexture(_nextPlanet.PlanetType);
+
+        var imageWidth = _nextPlanet.Radius * 2.5f;
+        var imageHeight = _nextPlanet.Radius * 2.5f;
+
+        // Calculate the middle X position of the "Next Planet" text
+        var nextPlanetTextMiddleX = 65 + _nextPlanetFontTexture.Width * _nextPlanetFontScale / 2;
+
+        // Calculate the Y position of the "Score" text
+        const int scoreTextY = 281;
+
+        // Calculate the Y position of the "Next Planet" text
+        var nextPlanetTextY = 25 + _nextPlanetFontTexture.Height * _nextPlanetFontScale;
+
+        // Calculate the middle Y position
+        var middleY = (scoreTextY + nextPlanetTextY) / 2;
+
+        // Calculate the position for the next planet
+        // The X position is the middle X position of the "Next Planet" text minus half of the planet's width
+        // The Y position is the middle Y position
+        var nextPlanetPosition = new Vector2(nextPlanetTextMiddleX - imageWidth / 2, middleY);
+
+        Game.SpriteBatch.Draw(_nextPlanetTexture,
+            new Rectangle((int)nextPlanetPosition.X, (int)(nextPlanetPosition.Y - imageHeight / 2),
+                (int)imageWidth, (int)imageHeight), Color.White);
     }
 }
