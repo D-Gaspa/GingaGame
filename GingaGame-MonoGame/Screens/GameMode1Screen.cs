@@ -64,15 +64,14 @@ public class GameMode1Screen : GameScreen
 
         var middleX = Game.GraphicsDevice.Viewport.Width / 2;
 
-        _currentPlanet = new Planet(PlanetType.Jupiter, new Vector2(middleX, 0))
+        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
         {
             IsPinned = true
         };
 
         _scene.AddPlanet(_currentPlanet);
 
-        //GenerateNextPlanet();
-        _nextPlanet = new Planet(PlanetType.Jupiter, new Vector2(middleX, 0));
+        GenerateNextPlanet();
     }
 
     private bool IsGameOver => _gameStateHandler.IsGameOver;

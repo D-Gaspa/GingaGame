@@ -45,10 +45,10 @@ public static class PlanetSizes
 {
     public static Dictionary<int, float> Sizes { get; } = new()
     {
-        { 0, 100 },
-        { 1, 100 },
-        { 2, 100 },
-        { 3, 100 },
+        { 0, 40 },
+        { 1, 45 },
+        { 2, 50 },
+        { 3, 55 },
         { 4, 60 },
         { 5, 65 },
         { 6, 70 },
@@ -73,6 +73,6 @@ public static class PlanetPoints
         { 7, 24 },
         { 8, 26 },
         { 9, 28 },
-        { 10, 10000 }
+        { 10, 30 }
     };
 }
