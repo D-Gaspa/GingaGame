@@ -15,4 +15,6 @@ public abstract class GameScreen
     public abstract void Update(GameTime gameTime);
     public abstract void Draw();
     public abstract void ResetGame();
+    public abstract void ResumeGame();
+    public abstract void PauseGame();
 }

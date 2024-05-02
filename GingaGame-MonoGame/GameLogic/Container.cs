@@ -11,22 +11,21 @@ public class Container
     public Vector2 TopLeft { get; private set; }
     public Vector2 TopRight { get; private set; }
     public Vector2 BottomLeft { get; private set; }
-    public Vector2 BottomRight { get; set; }
+    public Vector2 BottomRight { get; private set; }
 
     public void InitializeContainer(GraphicsDevice graphicsDevice, int displayWidth, int containerHeight,
-        int verticalTopMargin = 70)
+        int verticalTopMargin = 120, int verticalBottomMargin = 70)
     {
         _lineTexture = new Texture2D(graphicsDevice, 1, 1);
         _lineTexture.SetData(new[] { Color.White });
 
-        float verticalMargin = verticalTopMargin;
         const float horizontalLength = 450;
         var horizontalMargin = (displayWidth - horizontalLength) / 2;
 
-        TopLeft = new Vector2(horizontalMargin, verticalMargin);
-        TopRight = new Vector2(displayWidth - horizontalMargin, verticalMargin);
-        BottomLeft = new Vector2(horizontalMargin, containerHeight - verticalMargin);
-        BottomRight = new Vector2(displayWidth - horizontalMargin, containerHeight - verticalMargin);
+        TopLeft = new Vector2(horizontalMargin, verticalTopMargin);
+        TopRight = new Vector2(displayWidth - horizontalMargin, verticalTopMargin);
+        BottomLeft = new Vector2(horizontalMargin, containerHeight - verticalBottomMargin);
+        BottomRight = new Vector2(displayWidth - horizontalMargin, containerHeight - verticalBottomMargin);
     }
 
     public void ShowEndLine()

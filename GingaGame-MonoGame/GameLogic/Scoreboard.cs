@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.IO.IsolatedStorage;
 using System.Linq;
 
 namespace GingaGame_MonoGame.GameLogic;
@@ -25,15 +24,20 @@ public class Scoreboard
 
     public void AddScore(string playerName, int score)
     {
-        var newScore = new ScoreEntry(FormatPlayerName(playerName), score);
+        var newScore = new ScoreEntry(playerName, score);
 
-        // Get the index of where the new score compares to lesser or equal scores
-        var index = _scores.FindIndex(s => s.Score <= score);
+        // Load all scores from the file
+        var allScores = GetScoreEntriesFromFile(_scoreFile).ToList();
 
-        // Insert the new score at the correct position
-        _scores.Insert(index >= 0 ? index : _scores.Count, newScore);
+        // Add the new score
+        allScores.Add(newScore);
 
-        AppendScoreToFile(newScore);
+        // Sort all scores in descending order
+        allScores.Sort((x, y) => y.Score.CompareTo(x.Score));
+
+        // Rewrite the entire file with the sorted scores
+        using var writer = new StreamWriter(_scoreFile);
+        foreach (var entry in allScores) writer.WriteLine($"{entry.PlayerName}:{entry.Score}");
     }
 
     public IEnumerable<ScoreEntry> GetTopScores()
@@ -56,11 +60,10 @@ public class Scoreboard
 
     private static IEnumerable<ScoreEntry> GetScoreEntriesFromFile(string scoreFile)
     {
-        using var storage = IsolatedStorageFile.GetUserStoreForApplication();
-        if (!storage.FileExists(scoreFile))
+        if (!File.Exists(scoreFile))
             yield break;
 
-        using var reader = new StreamReader(new IsolatedStorageFileStream(scoreFile, FileMode.Open, storage));
+        using var reader = new StreamReader(scoreFile);
 
         var lines = reader.ReadToEnd().Split('\n');
 
@@ -72,14 +75,6 @@ public class Scoreboard
 
             yield return new ScoreEntry(FormatPlayerName(parts[0]), score);
         }
-    }
-
-    private void AppendScoreToFile(ScoreEntry scoreEntry)
-    {
-        using var storage = IsolatedStorageFile.GetUserStoreForApplication();
-        using var writer = new StreamWriter(new IsolatedStorageFileStream(_scoreFile, FileMode.Append, storage));
-
-        writer.WriteLine($"{scoreEntry.PlayerName}:{scoreEntry.Score}");
     }
 
     private static string FormatPlayerName(string playerName)

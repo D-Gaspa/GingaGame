@@ -54,7 +54,7 @@ public class GameMode1Screen : GameScreen
         _score = new Score();
         _scoreboard = new Scoreboard(Mode);
 
-        var userInterfaceCreator = new UserInterfaceCreator(desktop);
+        var userInterfaceCreator = new UserInterfaceCreator(desktop, this);
         _gameStateHandler = new GameStateHandler(_container, this, _score, _scoreboard, userInterfaceCreator);
 
         var planetMergingService = new PlanetMergingService(_scene, Mode, _planetFactory, _score);
@@ -64,15 +64,19 @@ public class GameMode1Screen : GameScreen
 
         var middleX = Game.GraphicsDevice.Viewport.Width / 2;
 
-        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
+        _currentPlanet = new Planet(PlanetType.Jupiter, new Vector2(middleX, 0))
         {
             IsPinned = true
         };
 
         _scene.AddPlanet(_currentPlanet);
 
-        GenerateNextPlanet();
+        //GenerateNextPlanet();
+        _nextPlanet = new Planet(PlanetType.Jupiter, new Vector2(middleX, 0));
     }
+
+    private bool IsGameOver => _gameStateHandler.IsGameOver;
+    private bool IsGamePaused => _gameStateHandler.IsGamePaused;
 
     public override void LoadContent()
     {
@@ -129,18 +133,37 @@ public class GameMode1Screen : GameScreen
         // Reset the game state and initialize the game again
         _scene.ClearPlanets();
         _score.ResetScore();
-        UpdateScoreboardText();
         _planetFactory.InitializeDefaultPlanetByGameMode();
-        
-        _elapsedTime = 0;
-        _isInputEnabled = true;
 
-        _currentPlanet.Position = new Vector2(0, 0);
-        _currentPlanet.IsPinned = true;
+        _elapsedTime = 0;
+
+        var middleX = Game.GraphicsDevice.Viewport.Width / 2;
+
+        _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(middleX, 0))
+        {
+            IsPinned = true
+        };
 
         _scene.AddPlanet(_currentPlanet);
 
         GenerateNextPlanet();
+
+        _gameStateHandler.IsGameOver = false;
+    }
+
+    public override void ResumeGame()
+    {
+        _isInputEnabled = true;
+
+        UpdateScoreboardText();
+
+        _gameStateHandler.ResumeGame();
+    }
+
+    public override void PauseGame()
+    {
+        _isInputEnabled = false;
+        _gameStateHandler.PauseGame();
     }
 
     private void GenerateNextPlanet()
@@ -154,7 +177,7 @@ public class GameMode1Screen : GameScreen
         var mouseState = Mouse.GetState();
 
         // Check if the left mouse button is pressed and input is enabled
-        if (mouseState.LeftButton == ButtonState.Pressed && _isInputEnabled)
+        if (mouseState.LeftButton == ButtonState.Pressed && _isInputEnabled && !IsGameOver)
             // Check if the current planet is pinned
             if (_currentPlanet.IsPinned)
             {
@@ -165,13 +188,13 @@ public class GameMode1Screen : GameScreen
                 _isInputEnabled = false;
             }
 
-        // If input is disabled, increment the elapsed time
-        if (!_isInputEnabled)
+        // If input is disabled (and the game is not paused), increment the elapsed time
+        if (!_isInputEnabled && !IsGamePaused)
         {
             _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
 
             // If the elapsed time is greater than the delay, switch the planet and re-enable input
-            if (_elapsedTime >= ClickDelay)
+            if (_elapsedTime >= ClickDelay && !IsGameOver)
             {
                 SwitchPlanet();
                 _isInputEnabled = true;

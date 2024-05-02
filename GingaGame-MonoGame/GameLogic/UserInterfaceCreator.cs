@@ -1,4 +1,5 @@
-﻿using Myra.Graphics2D;
+﻿using System;
+using Myra.Graphics2D;
 using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame.GameLogic;
@@ -6,18 +7,21 @@ namespace GingaGame_MonoGame.GameLogic;
 public class UserInterfaceCreator
 {
     private readonly Desktop _desktop;
+    private readonly GameScreen _gameScreen;
 
-    public UserInterfaceCreator(Desktop desktop)
+    public UserInterfaceCreator(Desktop desktop, GameScreen gameScreen)
     {
         _desktop = desktop;
+        _gameScreen = gameScreen;
     }
 
     public void ShowMessageWindow(string title)
     {
+        _gameScreen.PauseGame();
+
         var window = new Window
         {
             Title = title,
-            Width = 200,
             Padding = new Thickness(8)
         };
 
@@ -27,16 +31,20 @@ public class UserInterfaceCreator
             HorizontalAlignment = HorizontalAlignment.Center
         };
 
-        okButton.Click += (_, _) => { window.Close(); };
+        okButton.Click += (_, _) =>
+        {
+            window.Close();
+            _gameScreen.ResumeGame();
+        };
 
         window.Content = okButton;
 
         window.ShowModal(_desktop);
     }
 
-    public (bool, string) ShowInputDialog(string title, string message)
+    public void ShowInputDialog(string title, string message, Action<bool, string> callback)
     {
-        var success = false;
+        _gameScreen.PauseGame();
 
         var dialog = new Dialog { Title = title };
 
@@ -54,11 +62,10 @@ public class UserInterfaceCreator
 
         dialog.Closed += (_, _) =>
         {
-            if (dialog.Result) success = true;
+            callback(dialog.Result, textBox1.Text);
+            _gameScreen.ResumeGame();
         };
 
         dialog.ShowModal(_desktop);
-
-        return (success, textBox1.Text);
     }
 }

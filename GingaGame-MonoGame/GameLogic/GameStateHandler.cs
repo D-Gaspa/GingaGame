@@ -23,6 +23,9 @@ public class GameStateHandler
         _userInterfaceCreator = userInterfaceCreator;
     }
 
+    public bool IsGameOver { get; set; }
+    public bool IsGamePaused { get; private set; }
+
     public void Update()
     {
         if (!_drawEndLine)
@@ -48,16 +51,23 @@ public class GameStateHandler
     private void CheckLoseCondition(Planet planet)
     {
         if (!(planet.Position.Y < _container.TopLeft.Y + planet.Radius - Tolerance)) return;
+
         _gameOverTriggered = true;
-        _userInterfaceCreator.ShowMessageWindow("Game Over! You lost!");
 
         // Check if the player won the game before losing
         if (_gameWonTriggered)
         {
-            var (success, playerName) =
-                _userInterfaceCreator.ShowInputDialog("Congratulations! You won!", "Enter your name:");
-            if (success) _scoreboard.AddScore(playerName, _score.CurrentScore);
+            _userInterfaceCreator.ShowInputDialog("Game Over! Save your score!", "Enter your name:",
+                (success, playerName) =>
+                {
+                    if (success) _scoreboard.AddScore(playerName, _score.CurrentScore);
+
+                    ResetGame();
+                });
+            return;
         }
+
+        _userInterfaceCreator.ShowMessageWindow("Game Over! You lost!");
 
         ResetGame();
     }
@@ -71,8 +81,19 @@ public class GameStateHandler
 
     private void ResetGame()
     {
+        IsGameOver = true;
         _gameModeControl.ResetGame();
         _gameOverTriggered = false;
         _gameWonTriggered = false;
+    }
+
+    public void ResumeGame()
+    {
+        IsGamePaused = false;
+    }
+
+    public void PauseGame()
+    {
+        IsGamePaused = true;
     }
 }

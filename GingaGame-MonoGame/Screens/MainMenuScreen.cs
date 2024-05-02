@@ -101,4 +101,14 @@ public class MainMenuScreen : GameScreen
     {
         // No game state to reset in the main menu
     }
+
+    public override void ResumeGame()
+    {
+        // No input to enable in the main menu
+    }
+
+    public override void PauseGame()
+    {
+        // No input to disable in the main menu
+    }
 }

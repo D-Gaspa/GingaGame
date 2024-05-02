@@ -30,6 +30,16 @@ public class GameMode2Screen : GameScreen
         throw new NotImplementedException();
     }
 
+    public override void ResumeGame()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override void PauseGame()
+    {
+        throw new NotImplementedException();
+    }
+
     public Planet GetCurrentPlanet()
     {
         throw new NotImplementedException();
