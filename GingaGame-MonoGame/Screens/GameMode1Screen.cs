@@ -45,7 +45,8 @@ public class GameMode1Screen : GameScreen
         _scene = new Scene();
         _currentPlanet = new Planet(PlanetType.Pluto, new Vector2(50, 50));
         _planetFactory = new PlanetFactory(Mode);
-        _gameStateHandler = new GameStateHandler(_container, desktop, this, _score, _scoreboard);
+        var userInterfaceCreator = new UserInterfaceCreator(desktop);
+        _gameStateHandler = new GameStateHandler(_container, this, _score, _scoreboard, userInterfaceCreator);
         _collisionManager = new CollisionManager(_container, Mode, _gameStateHandler, _planetFactory, _scene, _score,
             null);
 
