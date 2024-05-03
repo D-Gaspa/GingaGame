@@ -11,6 +11,7 @@ namespace GingaGame_MonoGame;
 public class GameMode2Screen : GameModeScreenBase
 {
     private const float ParallaxBackgroundFactor = 0.1f;
+    private readonly CheckButton _followPlanetCheckButton;
 
     private readonly Dictionary<string, string> _mapData = new()
     {
@@ -33,6 +34,18 @@ public class GameMode2Screen : GameModeScreenBase
     public GameMode2Screen(Game1 game, Desktop desktop) : base(game, desktop)
     {
         // Game components are initialized in the base class
+
+        _followPlanetCheckButton = new CheckButton
+        {
+            Content = new Label
+            {
+                Text = "Follow Planet"
+                
+            },
+            IsChecked = false,
+        };
+        
+        desktop.Widgets.Add(_followPlanetCheckButton);
     }
 
     protected override GameMode Mode => GameMode.Mode2;
@@ -98,15 +111,17 @@ public class GameMode2Screen : GameModeScreenBase
 
     public override void Update(GameTime gameTime)
     {
+        _followPlanet = _followPlanetCheckButton.IsChecked;
+
         if (IsInputEnabled)
         {
             var keyboardState = Keyboard.GetState();
             HandleKeyboardInput(keyboardState);
         }
-        
+
         base.Update(gameTime);
     }
-    
+
     private void HandleKeyboardInput(KeyboardState keyboardState)
     {
         const int scrollSpeed = 35;
