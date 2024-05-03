@@ -111,13 +111,13 @@ public class GameMode2Screen : GameModeScreenBase
     {
         const int scrollSpeed = 35;
 
-        if (keyboardState.IsKeyDown(Keys.Up))
+        if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
         {
             if (_scrollOffset < scrollSpeed) return;
             _scrollOffset -= scrollSpeed;
             DeselectCurrentPlanet();
         }
-        else if (keyboardState.IsKeyDown(Keys.Down))
+        else if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
         {
             if (_scrollOffset >= (Scene.Floors.Count - 1) * FloorHeight - _verticalMargin + scrollSpeed) return;
             _scrollOffset += scrollSpeed;

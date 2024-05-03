@@ -51,7 +51,7 @@ public class ConstraintHandler
             // Can pass - no collision
             return;
 
-        const int floorEndPositionHeight = 30; // The height of the rectangle at the end of the floor
+        const int floorEndPositionHeight = 50; // The height of the rectangle at the end of the floor
 
         // Handle Collision (similar to container boundaries)
         if (!(planet.Position.Y > floor.EndPositionY - floorEndPositionHeight - planet.Radius)) return;
