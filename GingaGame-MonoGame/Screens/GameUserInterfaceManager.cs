@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -11,6 +12,9 @@ public class GameUserInterfaceManager
     private const float DesiredFontHeight = 35;
     private readonly Game1 _game;
     private readonly GameMode _gameMode;
+
+    private int _backgroundRepetitions;
+    private int _backgroundYOffset;
 
     public GameUserInterfaceManager(Game1 game, GameMode gameMode)
     {
@@ -41,10 +45,10 @@ public class GameUserInterfaceManager
     {
         BackgroundTexture =
             LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/Background2" : "Resources/ScrollerBackground1");
-        
+
         EvolutionCycleTexture =
             LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/EvolutionCycle" : "Resources/EvolutionCycle2");
-        
+
         NextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
         ScoreFontTexture = LoadTexture("Resources/ScoreFont");
         TopScoresFontTexture = LoadTexture("Resources/TopScoresFont");
@@ -90,11 +94,39 @@ public class GameUserInterfaceManager
         DrawEvolutionCycle();
     }
 
+    public void PrepareBackgroundWithOffset(int backgroundYOffset, int screenHeight, int verticalMargin)
+    {
+        _backgroundYOffset = backgroundYOffset;
+        // Calculate how many background image repetitions are needed to cover the viewable area
+        _backgroundRepetitions = (int)Math.Ceiling((screenHeight + 2 * verticalMargin + backgroundYOffset) /
+                                                   (float)BackgroundTexture.Height);
+    }
+
     private void DrawBackground()
     {
-        _game.SpriteBatch.Draw(BackgroundTexture,
-            new Rectangle(0, 0, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height),
-            Color.White);
+        switch (_gameMode)
+        {
+            case GameMode.Mode1:
+                _game.SpriteBatch.Draw(BackgroundTexture,
+                    new Rectangle(0, 0, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height),
+                    Color.White);
+                break;
+            case GameMode.Mode2:
+            {
+                // Draw the background image multiple times, offsetting it vertically for each repetition
+                for (var i = 0; i < _backgroundRepetitions; i++)
+                {
+                    var yPosition = -_backgroundYOffset + i * BackgroundTexture.Height;
+                    _game.SpriteBatch.Draw(BackgroundTexture,
+                        new Rectangle(0, yPosition, _game.GraphicsDevice.Viewport.Width, BackgroundTexture.Height),
+                        Color.White);
+                }
+
+                break;
+            }
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     private void DrawNextPlanetText()

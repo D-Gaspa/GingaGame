@@ -9,18 +9,19 @@ namespace GingaGame_MonoGame;
 
 public abstract class GameModeScreenBase : GameScreen
 {
-    protected const double ClickDelay = 0.5; // Delay in seconds
+    private const double ClickDelay = 0.5; // Delay in seconds
+    private double _elapsedTime;
+    private Planet _nextPlanet;
+    private Scoreboard _scoreboard;
     protected CollisionManager CollisionManager;
     protected Container Container;
-    protected Planet CurrentPlanet;
-    protected double ElapsedTime;
+    protected Planet CurrentPlanetToDrop;
     protected GameStateHandler GameStateHandler;
     protected bool IsInputEnabled = true;
-    protected Planet NextPlanet;
+    protected bool MouseClickHandled;
     protected PlanetFactory PlanetFactory;
     protected Scene Scene;
     protected Score Score;
-    protected Scoreboard Scoreboard;
     protected GameUserInterfaceManager UserInterfaceManager;
 
     protected GameModeScreenBase(Game1 game, Desktop desktop) : base(game)
@@ -30,7 +31,7 @@ public abstract class GameModeScreenBase : GameScreen
 
     protected abstract GameMode Mode { get; }
 
-    private bool IsGameOver => GameStateHandler.IsGameOver;
+    protected bool IsGameOver => GameStateHandler.IsGameOver;
     private bool IsGamePaused => GameStateHandler.IsGamePaused;
 
     private void InitializeGameComponents(Game1 game, Desktop desktop)
@@ -38,7 +39,7 @@ public abstract class GameModeScreenBase : GameScreen
         PlanetTextures.SetContentManager(Game.Content);
 
         PlanetTextures.InitializePlanetTextures();
-        
+
         UserInterfaceManager = new GameUserInterfaceManager(game, Mode);
 
         Container = new Container();
@@ -48,18 +49,17 @@ public abstract class GameModeScreenBase : GameScreen
         PlanetFactory = new PlanetFactory(Mode);
 
         Score = new Score();
-        Scoreboard = new Scoreboard(Mode);
+        _scoreboard = new Scoreboard(Mode);
 
         var userInterfaceCreator = new UserInterfaceCreator(desktop, this);
-        GameStateHandler = new GameStateHandler(Container, Mode, this, Score, Scoreboard, userInterfaceCreator);
+        GameStateHandler = new GameStateHandler(Container, Mode, this, Score, _scoreboard, userInterfaceCreator);
 
-        var planetMergingService = new PlanetMergingService(Scene, Mode, PlanetFactory, Score);
-        var constraintHandler = new ConstraintHandler(Mode, Scene);
-        CollisionManager = new CollisionManager(constraintHandler, Mode, GameStateHandler,
-            planetMergingService, Scene);
+        InitializeGameSpecificComponents();
 
         SetupPlanetsAndScene();
     }
+
+    protected abstract void InitializeGameSpecificComponents();
 
     public override void LoadContent()
     {
@@ -69,7 +69,7 @@ public abstract class GameModeScreenBase : GameScreen
 
     protected virtual void InitializeElements()
     {
-        UserInterfaceManager.Initialize(Scoreboard);
+        UserInterfaceManager.Initialize(_scoreboard);
     }
 
     public override void ResetGame()
@@ -78,7 +78,7 @@ public abstract class GameModeScreenBase : GameScreen
         Scene.ClearPlanets();
         Score.ResetScore();
         PlanetFactory.InitializeDefaultPlanetByGameMode();
-        ElapsedTime = 0;
+        _elapsedTime = 0;
         SetupPlanetsAndScene();
         GameStateHandler.IsGameOver = false;
     }
@@ -94,12 +94,12 @@ public abstract class GameModeScreenBase : GameScreen
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        CurrentPlanet = new Planet(planetType, new Vector2(middleX, 0))
+        CurrentPlanetToDrop = new Planet(planetType, new Vector2(middleX, 0))
         {
             IsPinned = true
         };
 
-        Scene.AddPlanet(CurrentPlanet);
+        Scene.AddPlanet(CurrentPlanetToDrop);
         GenerateNextPlanet();
     }
 
@@ -107,7 +107,7 @@ public abstract class GameModeScreenBase : GameScreen
     {
         IsInputEnabled = true;
 
-        UserInterfaceManager.UpdateScoreboardText(Scoreboard);
+        UserInterfaceManager.UpdateScoreboardText(_scoreboard);
 
         GameStateHandler.ResumeGame();
     }
@@ -120,7 +120,7 @@ public abstract class GameModeScreenBase : GameScreen
 
     private void GenerateNextPlanet()
     {
-        NextPlanet = PlanetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
+        _nextPlanet = PlanetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
     public override void Update(GameTime gameTime)
@@ -135,7 +135,7 @@ public abstract class GameModeScreenBase : GameScreen
         if (!IsInputEnabled && !IsGamePaused) HandleElapsedTime(gameTime);
 
         // Check if the current planet is pinned
-        if (CurrentPlanet.IsPinned) UpdateCurrentPlanetPosition(mouseState);
+        if (CurrentPlanetToDrop.IsPinned) UpdateCurrentPlanetPosition(mouseState);
 
         // Update the planet positions
         Scene.Update();
@@ -149,14 +149,14 @@ public abstract class GameModeScreenBase : GameScreen
         GameStateHandler.Update();
     }
 
-    private void HandleMouseClick(MouseState mouseState)
+    protected virtual void HandleMouseClick(MouseState mouseState)
     {
         // Check if the left mouse button is pressed and input is enabled
         if (mouseState.LeftButton != ButtonState.Pressed || !IsInputEnabled || IsGameOver) return;
-        if (!CurrentPlanet.IsPinned) return;
+        if (!CurrentPlanetToDrop.IsPinned) return;
 
         UpdateCurrentPlanetPosition(mouseState);
-        CurrentPlanet.IsPinned = false;
+        CurrentPlanetToDrop.IsPinned = false;
 
         // Disable input
         IsInputEnabled = false;
@@ -164,50 +164,50 @@ public abstract class GameModeScreenBase : GameScreen
 
     private void HandleElapsedTime(GameTime gameTime)
     {
-        ElapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
+        _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
         // If the elapsed time is greater than the delay, switch the planet and re-enable input
-        if (!(ElapsedTime >= ClickDelay) || IsGameOver) return;
+        if (!(_elapsedTime >= ClickDelay) || IsGameOver) return;
         SwitchPlanet();
         IsInputEnabled = true;
-        ElapsedTime = 0;
+        _elapsedTime = 0;
     }
 
     private void SwitchPlanet()
     {
         // Switch the current planet with the next planet
-        CurrentPlanet = NextPlanet;
+        CurrentPlanetToDrop = _nextPlanet;
 
         // Pin the planet
-        CurrentPlanet.IsPinned = true;
+        CurrentPlanetToDrop.IsPinned = true;
 
         // Add the planet to the scene
-        Scene.AddPlanet(CurrentPlanet);
+        Scene.AddPlanet(CurrentPlanetToDrop);
 
         // Generate the next planet
         GenerateNextPlanet();
     }
 
-    private void UpdateCurrentPlanetPosition(MouseState mouseState)
+    protected void UpdateCurrentPlanetPosition(MouseState mouseState)
     {
         var x = mouseState.X;
 
         // Check if the planet is out of bounds
         // If it is, set the position to the closest edge of the container
         // Otherwise, set the position to the mouse's X coordinate
-        if (x < Container.TopLeft.X + CurrentPlanet.Radius)
+        if (x < Container.TopLeft.X + CurrentPlanetToDrop.Radius)
         {
-            CurrentPlanet.Position.X = Container.TopLeft.X + CurrentPlanet.Radius;
-            CurrentPlanet.OldPosition.X = Container.TopLeft.X + CurrentPlanet.Radius;
+            CurrentPlanetToDrop.Position.X = Container.TopLeft.X + CurrentPlanetToDrop.Radius;
+            CurrentPlanetToDrop.OldPosition.X = Container.TopLeft.X + CurrentPlanetToDrop.Radius;
         }
-        else if (x > Container.BottomRight.X - CurrentPlanet.Radius)
+        else if (x > Container.BottomRight.X - CurrentPlanetToDrop.Radius)
         {
-            CurrentPlanet.Position.X = Container.BottomRight.X - CurrentPlanet.Radius;
-            CurrentPlanet.OldPosition.X = Container.BottomRight.X - CurrentPlanet.Radius;
+            CurrentPlanetToDrop.Position.X = Container.BottomRight.X - CurrentPlanetToDrop.Radius;
+            CurrentPlanetToDrop.OldPosition.X = Container.BottomRight.X - CurrentPlanetToDrop.Radius;
         }
         else
         {
-            CurrentPlanet.Position.X = x;
-            CurrentPlanet.OldPosition.X = x;
+            CurrentPlanetToDrop.Position.X = x;
+            CurrentPlanetToDrop.OldPosition.X = x;
         }
     }
 
@@ -225,12 +225,17 @@ public abstract class GameModeScreenBase : GameScreen
         // Draw the user interface elements
         UserInterfaceManager.DrawInterfaceElements();
 
-        // Draw the scene (planets, container and floors (if game mode 2)
-        Scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
+        // Draw the scene
+        DrawScene();
 
         // Draw the next planet
-        UserInterfaceManager.DrawNextPlanet(NextPlanet);
+        UserInterfaceManager.DrawNextPlanet(_nextPlanet);
 
         Game.SpriteBatch.End();
+    }
+
+    protected virtual void DrawScene()
+    {
+        Scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
     }
 }

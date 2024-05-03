@@ -33,7 +33,7 @@ public class PlanetMergingService
 
     /// <summary>
     ///     Merges two planets taking into account the current game mode. The new planet is created
-    ///     accordingly and added to the scene. If necessary, calculates the new score.
+    ///     accordingly and added to the scene. The score is updated with the points of the new planet.
     /// </summary>
     /// <param name="planet1">The first planet to merge.</param>
     /// <param name="planet2">The second planet to merge.</param>
@@ -60,9 +60,7 @@ public class PlanetMergingService
         // Add the new planet to the scene
         _scene.AddPlanet(mergedPlanet);
 
-        // Update scores for game mode 1
-        if (_gameMode == GameMode.Mode1)
-            UpdateScoreWithPlanetPoints(mergedPlanet.Points);
+        UpdateScoreWithPlanetPoints(mergedPlanet.Points);
 
         return mergedPlanet;
     }
