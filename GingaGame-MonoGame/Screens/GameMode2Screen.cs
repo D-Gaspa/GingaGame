@@ -13,11 +13,25 @@ public class GameMode2Screen : GameModeScreenBase
     private const float ParallaxBackgroundFactor = 0.1f;
     private readonly CheckButton _followPlanetCheckButton;
 
-    private readonly Dictionary<string, string> _mapData = new()
+    private readonly Dictionary<string, string> _mapData1 = new()
+    {
+        { "VerticalMargin", "120" },
+        { "HorizontalMargin", "0" },
+        { "NumberOfFloors", "4->3,4,3,1" }
+    };
+    
+    private readonly Dictionary<string, string> _mapData2 = new()
     {
         { "VerticalMargin", "120" },
         { "HorizontalMargin", "0" },
         { "NumberOfFloors", "4->4,3,3,1" }
+    };
+    
+    private readonly Dictionary<string, string> _mapData3 = new()
+    {
+        { "VerticalMargin", "120" },
+        { "HorizontalMargin", "0" },
+        { "NumberOfFloors", "3->5,5,1" }
     };
 
     private int _backgroundYOffset;
@@ -28,12 +42,15 @@ public class GameMode2Screen : GameModeScreenBase
     private int _numberOfFloors;
     private List<int> _planetsPerFloor = new();
     private int _scrollOffset;
+    private readonly string _selectedLevel;
     private int _verticalMargin = 120;
 
 
-    public GameMode2Screen(Game1 game, Desktop desktop) : base(game, desktop)
+    public GameMode2Screen(Game1 game, Desktop desktop, string selectedLevel) : base(game, desktop)
     {
         // Game components are initialized in the base class
+        
+        _selectedLevel = selectedLevel;
 
         _followPlanetCheckButton = new CheckButton
         {
@@ -64,7 +81,13 @@ public class GameMode2Screen : GameModeScreenBase
     {
         base.InitializeElements();
 
-        LoadGameMode2Map(_mapData);
+        LoadGameMode2Map(_selectedLevel switch
+        {
+            "Level 1" => _mapData1,
+            "Level 2" => _mapData2,
+            "Level 3" => _mapData3,
+            _ => throw new Exception("Invalid level selection.")
+        });
 
         Scene.InitializeFloors(FloorHeight, _verticalMargin, _numberOfFloors, _planetsPerFloor);
 
