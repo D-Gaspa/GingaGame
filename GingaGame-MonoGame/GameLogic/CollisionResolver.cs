@@ -108,7 +108,7 @@ public class CollisionResolver
     /// </summary>
     /// <param name="planet1">First planet in collision.</param>
     /// <param name="planet2">Second planet in collision.</param>
-    private static void SimulateBounce(Planet planet1, Planet planet2)
+    private static void SimulateBounce(VerletPoint planet1, VerletPoint planet2)
     {
         // Check if the velocity is high enough for a bounce
         const float velocityThreshold = 0.8f;
@@ -128,8 +128,5 @@ public class CollisionResolver
         var separationVelocity = normal * bounceFactor;
         planet1.Position += separationVelocity;
         planet2.Position -= separationVelocity;
-
-        planet1.HasCollided = true;
-        planet2.HasCollided = true;
     }
 }

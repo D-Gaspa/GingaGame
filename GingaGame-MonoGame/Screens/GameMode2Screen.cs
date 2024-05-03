@@ -19,20 +19,22 @@ public class GameMode2Screen : GameModeScreenBase
         { "HorizontalMargin", "0" },
         { "NumberOfFloors", "4->3,4,3,1" }
     };
-    
+
     private readonly Dictionary<string, string> _mapData2 = new()
     {
         { "VerticalMargin", "120" },
         { "HorizontalMargin", "0" },
         { "NumberOfFloors", "4->4,3,3,1" }
     };
-    
+
     private readonly Dictionary<string, string> _mapData3 = new()
     {
         { "VerticalMargin", "120" },
         { "HorizontalMargin", "0" },
         { "NumberOfFloors", "3->5,5,1" }
     };
+
+    private readonly string _selectedLevel;
 
     private int _backgroundYOffset;
     private int _currentFloorIndex;
@@ -42,14 +44,13 @@ public class GameMode2Screen : GameModeScreenBase
     private int _numberOfFloors;
     private List<int> _planetsPerFloor = new();
     private int _scrollOffset;
-    private readonly string _selectedLevel;
     private int _verticalMargin = 120;
 
 
     public GameMode2Screen(Game1 game, Desktop desktop, string selectedLevel) : base(game, desktop)
     {
         // Game components are initialized in the base class
-        
+
         _selectedLevel = selectedLevel;
 
         _followPlanetCheckButton = new CheckButton
@@ -57,11 +58,10 @@ public class GameMode2Screen : GameModeScreenBase
             Content = new Label
             {
                 Text = "Follow Planet"
-                
             },
-            IsChecked = false,
+            IsChecked = false
         };
-        
+
         desktop.Widgets.Add(_followPlanetCheckButton);
     }
 

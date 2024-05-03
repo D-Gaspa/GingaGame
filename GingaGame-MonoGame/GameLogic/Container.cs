@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     Defines the boundaries of the game container and provides methods to draw the bounds.
+/// </summary>
 public class Container
 {
     private Texture2D _lineTexture;
@@ -13,6 +16,16 @@ public class Container
     public Vector2 BottomLeft { get; private set; }
     public Vector2 BottomRight { get; private set; }
 
+    /// <summary>
+    ///     Initialize the Container with the specified game mode, size, and margin settings.
+    /// </summary>
+    /// <param name="graphicsDevice">A GraphicsDevice that represents the display device.</param>
+    /// <param name="containerHeight">Height of the container.</param>
+    /// <param name="displayWidth">Screen width.</param>
+    /// <param name="gameMode">The current game mode (GameMode.Mode1 or GameMode.Mode2).</param>
+    /// <param name="verticalTopMargin">Top margin for the container.</param>
+    /// <param name="verticalBottomMargin">Bottom margin for the container.</param>
+    /// <param name="horizontalMargin">Horizontal margin for the container.</param>
     public void InitializeContainer(GraphicsDevice graphicsDevice, int containerHeight, int displayWidth,
         GameMode gameMode, int verticalTopMargin = 120, int verticalBottomMargin = 70, float horizontalMargin = 0)
     {
@@ -43,16 +56,30 @@ public class Container
         }
     }
 
+    /// <summary>
+    ///     Reveals the end line of the container.
+    /// </summary>
     public void ShowEndLine()
     {
         _renderEndLine = true;
     }
 
+    /// <summary>
+    ///     Hides the end line of the container.
+    /// </summary>
     public void HideEndLine()
     {
         _renderEndLine = false;
     }
 
+    /// <summary>
+    ///     Draws the container on the given spriteBatch.
+    /// </summary>
+    /// <param name="spriteBatch">A batch used for drawing a series of sprites.</param>
+    /// <param name="yOffset">
+    ///     The vertical offset to adjust the container by, in case it needs to be moved on the vertical
+    ///     axis.
+    /// </param>
     public void Draw(SpriteBatch spriteBatch, float yOffset = 0)
     {
         // Adjust the Y position with the offset (if any)
@@ -68,6 +95,14 @@ public class Container
         if (_renderEndLine) DrawLine(spriteBatch, adjustedTopRight, adjustedTopLeft, Color.Red, 1f);
     }
 
+    /// <summary>
+    ///     Draws a line on the given spriteBatch.
+    /// </summary>
+    /// <param name="spriteBatch">A batch used for drawing a series of sprites.</param>
+    /// <param name="start">The starting point of this line.</param>
+    /// <param name="end">The ending point of this line.</param>
+    /// <param name="color">The color of the line.</param>
+    /// <param name="thickness">The thickness of the line.</param>
     public void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float thickness)
     {
         var distance = Vector2.Distance(start, end);

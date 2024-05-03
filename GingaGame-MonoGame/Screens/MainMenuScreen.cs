@@ -9,12 +9,12 @@ public class MainMenuScreen : GameScreen
 {
     private const float LogoScaleFactor = 0.35f;
     private readonly Desktop _desktop;
+    private readonly ComboView _levelSelector;
     private Texture2D _backgroundTexture;
     private Rectangle _gameMode1ButtonRect;
     private Texture2D _gameMode1ButtonTexture;
     private Rectangle _gameMode2ButtonRect;
     private Texture2D _gameMode2ButtonTexture;
-    private readonly ComboView _levelSelector;
     private Rectangle _logoRect;
     private Texture2D _logoTexture;
 
@@ -31,7 +31,6 @@ public class MainMenuScreen : GameScreen
         _levelSelector.SelectedIndex = 0; // Select the first item by default
 
         _desktop.Widgets.Add(_levelSelector);
-
     }
 
     private int CenterX => Game.GraphicsDevice.Viewport.Width / 2;
@@ -77,14 +76,14 @@ public class MainMenuScreen : GameScreen
         {
             // Game mode 1 button was clicked
             Game.SwitchScreen(new GameMode1Screen(Game, _desktop)); // Switch to game mode 1 screen
-            
+
             _levelSelector.Visible = false;
         }
         else if (_gameMode2ButtonRect.Contains(Game1.MouseState.Position))
         {
             // Game mode 2 button was clicked
             Game.SwitchScreen(new GameMode2Screen(Game, _desktop, selectedLevel)); // Switch to game mode 2 screen
-            
+
             _levelSelector.Visible = false;
         }
     }

@@ -4,17 +4,29 @@ using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     The UserInterfaceCreator class provides methods to create UI elements for the game.
+/// </summary>
 public class UserInterfaceCreator
 {
     private readonly Desktop _desktop;
     private readonly GameScreen _gameScreen;
 
+    /// <summary>
+    ///     Initializes a new instance of the UserInterfaceCreator class.
+    /// </summary>
+    /// <param name="desktop">The desktop UI manager.</param>
+    /// <param name="gameScreen">The game screen that the UI will be displayed on.</param>
     public UserInterfaceCreator(Desktop desktop, GameScreen gameScreen)
     {
         _desktop = desktop;
         _gameScreen = gameScreen;
     }
 
+    /// <summary>
+    ///     Displays a message window with the specified title.
+    /// </summary>
+    /// <param name="title">The title for the message window.</param>
     public void ShowMessageWindow(string title)
     {
         _gameScreen.PauseGame();
@@ -42,6 +54,13 @@ public class UserInterfaceCreator
         window.ShowModal(_desktop);
     }
 
+    /// <summary>
+    ///     Shows an input dialog with the specified title and message,
+    ///     then calls the provided callback function when the dialog is closed.
+    /// </summary>
+    /// <param name="title">The title for the dialog.</param>
+    /// <param name="message">The message in the dialog.</param>
+    /// <param name="callback">The callback function to call when the dialog is closed.</param>
     public void ShowInputDialog(string title, string message, Action<bool, string> callback)
     {
         _gameScreen.PauseGame();

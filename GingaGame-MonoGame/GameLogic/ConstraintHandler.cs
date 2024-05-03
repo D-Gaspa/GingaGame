@@ -2,12 +2,21 @@
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     The ConstraintHandler class enforces constraints for the movement of a Planet, restricting it within various game
+///     boundaries.
+/// </summary>
 public class ConstraintHandler
 {
     private readonly Container _container;
     private readonly GameMode _gameMode;
     private readonly Scene _scene;
 
+    /// <summary>
+    ///     Initializes a new instance of the ConstraintHandler class.
+    /// </summary>
+    /// <param name="gameMode">The current game mode.</param>
+    /// <param name="scene">The current game scene.</param>
     public ConstraintHandler(GameMode gameMode, Scene scene)
     {
         _container = scene.Container;
@@ -15,12 +24,20 @@ public class ConstraintHandler
         _scene = scene;
     }
 
+    /// <summary>
+    ///     Enforces screen boundaries for a planet's position.
+    /// </summary>
+    /// <param name="planet">The planet to enforce the constraints on.</param>
     public static void ScreenConstraints(Planet planet)
     {
         // Check if the point is outside the top boundary of the screen
         if (planet.Position.Y < planet.Radius) planet.Position.Y = planet.Radius;
     }
 
+    /// <summary>
+    ///     Enforces container boundaries for a planet's position.
+    /// </summary>
+    /// <param name="planet">The planet to enforce the constraints on.</param>
     public void ContainerConstraints(Planet planet)
     {
         // Check if the point is outside the left boundary of the container
@@ -36,6 +53,10 @@ public class ConstraintHandler
             planet.Position.Y = _container.BottomLeft.Y - planet.Radius;
     }
 
+    /// <summary>
+    ///     Enforces floor boundaries for a planet's position according to game mode.
+    /// </summary>
+    /// <param name="planet">The planet to enforce the constraints on.</param>
     public void FloorConstraints(Planet planet)
     {
         if (_gameMode != GameMode.Mode2) return; // Apply only in GameMode2

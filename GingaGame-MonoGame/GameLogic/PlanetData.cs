@@ -3,8 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     Represents data associated with a planet, including its size, points, and texture.
+/// </summary>
 public class PlanetData
 {
+    /// <summary>
+    ///     Constructor for the PlanetData class.
+    /// </summary>
     private PlanetData(float size, int points, Texture2D texture)
     {
         Size = size;
@@ -12,10 +18,26 @@ public class PlanetData
         Texture = texture;
     }
 
+    /// <summary>
+    ///     Gets the size of the planet.
+    /// </summary>
     public float Size { get; private set; }
+
+    /// <summary>
+    ///     Gets the points associated with the planet.
+    /// </summary>
     public int Points { get; private set; }
+
+    /// <summary>
+    ///     Gets the texture used to represent the planet.
+    /// </summary>
     public Texture2D Texture { get; private set; }
 
+    /// <summary>
+    ///     Creates a PlanetData instance from the given PlanetType.
+    /// </summary>
+    /// <param name="planetType">Planet type whose data to generate.</param>
+    /// <returns>Returns a PlanetData instance.</returns>
     public static PlanetData FromPlanetType(PlanetType planetType)
     {
         return new PlanetData(
@@ -26,6 +48,9 @@ public class PlanetData
     }
 }
 
+/// <summary>
+///     Enum representing the different types of Planets.
+/// </summary>
 public enum PlanetType
 {
     Pluto,
@@ -41,6 +66,9 @@ public enum PlanetType
     Sun
 }
 
+/// <summary>
+///     Static dictionary holding the sizes of all PlanetTypes.
+/// </summary>
 public static class PlanetSizes
 {
     public static Dictionary<int, float> Sizes { get; } = new()
@@ -59,6 +87,9 @@ public static class PlanetSizes
     };
 }
 
+/// <summary>
+///     Static dictionary holding the points of all PlanetTypes.
+/// </summary>
 public static class PlanetPoints
 {
     public static Dictionary<int, int> PointsPerPlanet { get; } = new()

@@ -38,7 +38,7 @@ public class PlanetFactory
         } while (!_unlockedPlanets.Contains(nextPlanetType));
 
         var middleX = displayWidth / 2;
-        return new Planet(nextPlanetType, new Vector2(middleX, 0), true);
+        return new Planet(nextPlanetType, new Vector2(middleX, 0));
     }
 
     /// <summary>

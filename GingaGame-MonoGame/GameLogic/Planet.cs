@@ -3,9 +3,21 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     The Planet class represents a singular playable object within the game.
+///     <para>
+///         Each Planet has its own PlanetType along with other properties such as radius, points, texture, and collision
+///         status.
+///     </para>
+/// </summary>
 public class Planet : VerletPoint
 {
-    public Planet(PlanetType planetType, Vector2 position, bool hasCollided = false)
+    /// <summary>
+    ///     Initializes new instance of the Planet class.
+    /// </summary>
+    /// <param name="planetType">The type of the planet to create.</param>
+    /// <param name="position">The initial position of the planet.</param>
+    public Planet(PlanetType planetType, Vector2 position)
         : base(position, PlanetData.FromPlanetType(planetType).Size)
     {
         PlanetType = planetType;
@@ -14,15 +26,33 @@ public class Planet : VerletPoint
         Radius = planetData.Size;
         Texture = planetData.Texture;
         Points = planetData.Points;
-        HasCollided = hasCollided;
     }
 
+    /// <summary>
+    ///     Gets the type of the planet.
+    /// </summary>
     public PlanetType PlanetType { get; }
-    public float Radius { get; }
-    public int Points { get; private set; }
-    public bool HasCollided { get; set; }
-    public Texture2D Texture { get; }
 
+    /// <summary>
+    ///     Gets the radius of the planet.
+    /// </summary>
+    public float Radius { get; }
+
+    /// <summary>
+    ///     Gets the points awarded for the planet.
+    /// </summary>
+    public int Points { get; private set; }
+
+    /// <summary>
+    ///     Gets the texture used to represent the planet.
+    /// </summary>
+    private Texture2D Texture { get; }
+
+    /// <summary>
+    ///     Draws the planet with consideration for the Y-axis offset.
+    /// </summary>
+    /// <param name="spriteBatch"></param>
+    /// <param name="yOffset"></param>
     public void Draw(SpriteBatch spriteBatch, float yOffset = 0)
     {
         var adjustedPosition = new Vector2(Position.X, Position.Y - yOffset);
@@ -34,6 +64,11 @@ public class Planet : VerletPoint
                 (int)imageWidth, (int)imageHeight), Color.White);
     }
 
+    /// <summary>
+    ///     Draw the planet at a specific size.
+    /// </summary>
+    /// <param name="spriteBatch"></param>
+    /// <param name="size"></param>
     public void DrawWithSize(SpriteBatch spriteBatch, float size)
     {
         var imageWidth = size * 2;

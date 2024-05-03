@@ -6,11 +6,18 @@ using System.Linq;
 
 namespace GingaGame_MonoGame.GameLogic;
 
+/// <summary>
+///     Represents a scoreboard for the game, managing high scores and interfacing with storage.
+/// </summary>
 public class Scoreboard
 {
     private readonly string _scoreFile;
     private readonly List<ScoreEntry> _scores = new();
 
+    /// <summary>
+    ///     Initializes a new instance of the Scoreboard class.
+    /// </summary>
+    /// <param name="gameMode">The game mode for which to manage scores.</param>
     public Scoreboard(GameMode gameMode)
     {
         _scoreFile = gameMode switch
@@ -22,6 +29,11 @@ public class Scoreboard
         LoadScores();
     }
 
+    /// <summary>
+    ///     Adds a new entry to the scoreboard, persisting it to the appropriate storage.
+    /// </summary>
+    /// <param name="playerName">Player name to add to the scoreboard.</param>
+    /// <param name="score">The score earned by the player.</param>
     public void AddScore(string playerName, int score)
     {
         var newScore = new ScoreEntry(playerName, score);
@@ -40,6 +52,10 @@ public class Scoreboard
         foreach (var entry in allScores) writer.WriteLine($"{entry.PlayerName}:{entry.Score}");
     }
 
+    /// <summary>
+    ///     Returns the top scores from the scoreboard.
+    /// </summary>
+    /// <returns>The top scores in descending order.</returns>
     public IEnumerable<ScoreEntry> GetTopScores()
     {
         _scores.Clear();
@@ -49,6 +65,9 @@ public class Scoreboard
         return _scores;
     }
 
+    /// <summary>
+    ///     Loads the scores from the storage file.
+    /// </summary>
     private void LoadScores()
     {
         var scoreEntries = GetScoreEntriesFromFile(_scoreFile).ToList();
@@ -58,6 +77,10 @@ public class Scoreboard
         _scores.AddRange(scoreEntries.Take(5));
     }
 
+    /// <summary>
+    ///     Reads the score entries from the specified file.
+    /// </summary>
+    /// <param name="scoreFile">The file to read the score entries from.</param>
     private static IEnumerable<ScoreEntry> GetScoreEntriesFromFile(string scoreFile)
     {
         if (!File.Exists(scoreFile))
@@ -77,6 +100,11 @@ public class Scoreboard
         }
     }
 
+    /// <summary>
+    ///     Formats the player name for display in the scoreboard.
+    /// </summary>
+    /// <param name="playerName">The player name to format.</param>
+    /// <returns></returns>
     private static string FormatPlayerName(string playerName)
     {
         if (playerName.Length > 8)
@@ -86,14 +114,29 @@ public class Scoreboard
     }
 }
 
+/// <summary>
+///     Represents an entry in a scoreboard, combining a player name and a score.
+/// </summary>
 public class ScoreEntry
 {
+    /// <summary>
+    ///     Initializes a new instance of the ScoreEntry class.
+    /// </summary>
+    /// <param name="playerName">The player's name.</param>
+    /// <param name="score">The player's score.</param>
     public ScoreEntry(string playerName, int score)
     {
         PlayerName = playerName;
         Score = score;
     }
 
+    /// <summary>
+    ///     Gets the player's name for the score entry.
+    /// </summary>
     public string PlayerName { get; }
+
+    /// <summary>
+    ///     Gets the score value for the score entry.
+    /// </summary>
     public int Score { get; }
 }
