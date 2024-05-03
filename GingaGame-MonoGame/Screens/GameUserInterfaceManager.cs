@@ -39,10 +39,14 @@ public class GameUserInterfaceManager
 
     private void LoadTexturesAndFont()
     {
-        BackgroundTexture = LoadTexture("Resources/Background2");
+        BackgroundTexture =
+            LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/Background2" : "Resources/ScrollerBackground1");
+        
+        EvolutionCycleTexture =
+            LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/EvolutionCycle" : "Resources/EvolutionCycle2");
+        
         NextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
         ScoreFontTexture = LoadTexture("Resources/ScoreFont");
-        EvolutionCycleTexture = LoadTexture("Resources/EvolutionCycle");
         TopScoresFontTexture = LoadTexture("Resources/TopScoresFont");
         Font = _game.Content.Load<SpriteFont>("MyFont");
     }

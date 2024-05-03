@@ -1,13 +1,17 @@
 ﻿using System;
 using GingaGame_MonoGame.GameLogic;
 using Microsoft.Xna.Framework;
+using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame;
 
-public class GameMode2Screen : GameScreen
+public class GameMode2Screen : GameModeScreenBase
 {
-    public GameMode2Screen(Game1 game) : base(game)
+    protected override GameMode Mode => GameMode.Mode1;
+
+    public GameMode2Screen(Game1 game, Desktop desktop) : base(game, desktop)
     {
+        
     }
 
     public override void LoadContent()
@@ -26,16 +30,6 @@ public class GameMode2Screen : GameScreen
     }
 
     public override void ResetGame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void ResumeGame()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override void PauseGame()
     {
         throw new NotImplementedException();
     }

@@ -64,7 +64,7 @@ public class MainMenuScreen : GameScreen
             Game.SwitchScreen(new GameMode1Screen(Game, _desktop)); // Switch to game mode 1 screen
         else if (_gameMode2ButtonRect.Contains(Game1.MouseState.Position))
             // Game mode 2 button was clicked
-            Game.SwitchScreen(new GameMode2Screen(Game)); // Switch to game mode 2 screen
+            Game.SwitchScreen(new GameMode2Screen(Game, _desktop)); // Switch to game mode 2 screen
     }
 
     public override void Draw()
