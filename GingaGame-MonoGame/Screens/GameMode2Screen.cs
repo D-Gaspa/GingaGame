@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GingaGame_MonoGame.GameLogic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Myra.Graphics2D.UI;
 
@@ -93,6 +94,60 @@ public class GameMode2Screen : GameModeScreenBase
 
         if (_planetsPerFloor.Any(p => p is 0))
             throw new Exception("The number of planets per floor should be greater than 0.");
+    }
+
+    public override void Update(GameTime gameTime)
+    {
+        if (IsInputEnabled)
+        {
+            var keyboardState = Keyboard.GetState();
+            HandleKeyboardInput(keyboardState);
+        }
+        
+        base.Update(gameTime);
+    }
+    
+    private void HandleKeyboardInput(KeyboardState keyboardState)
+    {
+        const int scrollSpeed = 35;
+
+        if (keyboardState.IsKeyDown(Keys.Up))
+        {
+            if (_scrollOffset < scrollSpeed) return;
+            _scrollOffset -= scrollSpeed;
+            DeselectCurrentPlanet();
+        }
+        else if (keyboardState.IsKeyDown(Keys.Down))
+        {
+            if (_scrollOffset >= (Scene.Floors.Count - 1) * FloorHeight - _verticalMargin + scrollSpeed) return;
+            _scrollOffset += scrollSpeed;
+            DeselectCurrentPlanet();
+        }
+        else if (keyboardState.IsKeyDown(Keys.Back))
+        {
+            // Reset scroll offset
+            _scrollOffset = 0;
+            DeselectCurrentPlanet();
+        }
+        else if (keyboardState.IsKeyDown(Keys.Enter))
+        {
+            if (!CurrentPlanetToDrop.IsPinned) return;
+            // First go back to the top if not already there
+            if (_scrollOffset > 0)
+            {
+                _scrollOffset = 0;
+                DeselectCurrentPlanet();
+            }
+            else
+            {
+                // Drop the current planet
+                CurrentPlanetToDrop.IsPinned = false;
+                _currentPlanet = CurrentPlanetToDrop;
+
+                // Disable input immediately
+                IsInputEnabled = false;
+            }
+        }
     }
 
     protected override void HandleMouseClick(MouseState mouseState)
