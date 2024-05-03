@@ -13,19 +13,34 @@ public class Container
     public Vector2 BottomLeft { get; private set; }
     public Vector2 BottomRight { get; private set; }
 
-    public void InitializeContainer(GraphicsDevice graphicsDevice, int displayWidth, int containerHeight,
-        int verticalTopMargin = 120, int verticalBottomMargin = 70)
+    public void InitializeContainer(GraphicsDevice graphicsDevice, int containerHeight, int displayWidth,
+        GameMode gameMode, int verticalTopMargin = 120, int verticalBottomMargin = 70, float horizontalMargin = 0)
     {
         _lineTexture = new Texture2D(graphicsDevice, 1, 1);
         _lineTexture.SetData(new[] { Color.White });
 
-        const float horizontalLength = 450;
-        var horizontalMargin = (displayWidth - horizontalLength) / 2;
+        if (horizontalMargin <= 0)
+        {
+            const float horizontalLength = 450;
+            horizontalMargin = (displayWidth - horizontalLength) / 2;
+        }
 
         TopLeft = new Vector2(horizontalMargin, verticalTopMargin);
         TopRight = new Vector2(displayWidth - horizontalMargin, verticalTopMargin);
-        BottomLeft = new Vector2(horizontalMargin, containerHeight - verticalBottomMargin);
-        BottomRight = new Vector2(displayWidth - horizontalMargin, containerHeight - verticalBottomMargin);
+
+        switch (gameMode)
+        {
+            case GameMode.Mode1:
+                BottomLeft = new Vector2(horizontalMargin, containerHeight - verticalBottomMargin);
+                BottomRight = new Vector2(displayWidth - horizontalMargin, containerHeight - verticalBottomMargin);
+                break;
+            case GameMode.Mode2:
+                BottomLeft = new Vector2(horizontalMargin, containerHeight);
+                BottomRight = new Vector2(displayWidth - horizontalMargin, containerHeight);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(gameMode), gameMode, null);
+        }
     }
 
     public void ShowEndLine()
@@ -38,16 +53,22 @@ public class Container
         _renderEndLine = false;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public void Draw(SpriteBatch spriteBatch, float yOffset = 0)
     {
-        DrawLine(spriteBatch, TopRight, BottomRight, Color.White, 1f);
-        DrawLine(spriteBatch, BottomRight, BottomLeft, Color.White, 1f);
-        DrawLine(spriteBatch, BottomLeft, TopLeft, Color.White, 1f);
+        // Adjust the Y position with the offset (if any)
+        var adjustedTopRight = TopRight with { Y = TopRight.Y - yOffset };
+        var adjustedBottomRight = BottomRight with { Y = BottomRight.Y - yOffset };
+        var adjustedBottomLeft = BottomLeft with { Y = BottomLeft.Y - yOffset };
+        var adjustedTopLeft = TopLeft with { Y = TopLeft.Y - yOffset };
 
-        if (_renderEndLine) DrawLine(spriteBatch, TopRight, TopLeft, Color.Red, 1f);
+        DrawLine(spriteBatch, adjustedTopRight, adjustedBottomRight, Color.White, 1f);
+        DrawLine(spriteBatch, adjustedBottomRight, adjustedBottomLeft, Color.White, 1f);
+        DrawLine(spriteBatch, adjustedBottomLeft, adjustedTopLeft, Color.White, 1f);
+
+        if (_renderEndLine) DrawLine(spriteBatch, adjustedTopRight, adjustedTopLeft, Color.Red, 1f);
     }
 
-    private void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float thickness)
+    public void DrawLine(SpriteBatch spriteBatch, Vector2 start, Vector2 end, Color color, float thickness)
     {
         var distance = Vector2.Distance(start, end);
         var angle = (float)Math.Atan2(end.Y - start.Y, end.X - start.X);

@@ -33,4 +33,14 @@ public class Planet : VerletPoint
             new Rectangle((int)(adjustedPosition.X - imageWidth / 2), (int)(adjustedPosition.Y - imageHeight / 2),
                 (int)imageWidth, (int)imageHeight), Color.White);
     }
+
+    public void DrawWithSize(SpriteBatch spriteBatch, float size)
+    {
+        var imageWidth = size * 2;
+        var imageHeight = size * 2;
+
+        spriteBatch.Draw(Texture,
+            new Rectangle((int)(Position.X - imageWidth / 2), (int)(Position.Y - imageHeight / 2),
+                (int)imageWidth, (int)imageHeight), Color.White);
+    }
 }

@@ -32,9 +32,9 @@ public class GameMode1Screen : GameScreen
 
         _userInterfaceManager = new GameUserInterfaceManager(game, Mode);
 
-        _scene = new Scene();
-
         _container = new Container();
+
+        _scene = new Scene(_container);
 
         _planetFactory = new PlanetFactory(Mode);
 
@@ -42,10 +42,10 @@ public class GameMode1Screen : GameScreen
         _scoreboard = new Scoreboard(Mode);
 
         var userInterfaceCreator = new UserInterfaceCreator(desktop, this);
-        _gameStateHandler = new GameStateHandler(_container, this, _score, _scoreboard, userInterfaceCreator);
+        _gameStateHandler = new GameStateHandler(_container, Mode, this, _score, _scoreboard, userInterfaceCreator);
 
         var planetMergingService = new PlanetMergingService(_scene, Mode, _planetFactory, _score);
-        var constraintHandler = new ConstraintHandler(_container, Mode, _scene);
+        var constraintHandler = new ConstraintHandler(Mode, _scene);
         _collisionManager = new CollisionManager(constraintHandler, Mode, _gameStateHandler,
             planetMergingService, _scene);
 
@@ -65,8 +65,8 @@ public class GameMode1Screen : GameScreen
     {
         _userInterfaceManager.Initialize(_scoreboard);
 
-        _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Width,
-            Game.GraphicsDevice.Viewport.Height);
+        _container.InitializeContainer(Game.GraphicsDevice, Game.GraphicsDevice.Viewport.Height,
+            Game.GraphicsDevice.Viewport.Width, Mode);
     }
 
     public override void ResetGame()
@@ -213,11 +213,8 @@ public class GameMode1Screen : GameScreen
         // Draw the user interface elements
         _userInterfaceManager.DrawInterfaceElements();
 
-        // Draw the scene (planets)
+        // Draw the scene (planets and container)
         _scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);
-
-        // Draw the container
-        _container.Draw(Game.SpriteBatch);
 
         // Draw the next planet
         _userInterfaceManager.DrawNextPlanet(_nextPlanet);

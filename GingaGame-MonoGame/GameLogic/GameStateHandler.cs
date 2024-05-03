@@ -1,10 +1,13 @@
-﻿namespace GingaGame_MonoGame.GameLogic;
+﻿using System;
+
+namespace GingaGame_MonoGame.GameLogic;
 
 public class GameStateHandler
 {
     private const int DrawEndLineThreshold = 70;
     private const int Tolerance = 5;
     private readonly Container _container;
+    private readonly GameMode _gameMode;
     private readonly GameScreen _gameModeControl;
     private readonly Score _score;
     private readonly Scoreboard _scoreboard;
@@ -13,10 +16,11 @@ public class GameStateHandler
     private bool _gameOverTriggered;
     private bool _gameWonTriggered;
 
-    public GameStateHandler(Container container, GameScreen gameModeControl, Score score,
+    public GameStateHandler(Container container, GameMode gameMode, GameScreen gameModeControl, Score score,
         Scoreboard scoreboard, UserInterfaceCreator userInterfaceCreator)
     {
         _container = container;
+        _gameMode = gameMode;
         _gameModeControl = gameModeControl;
         _score = score;
         _scoreboard = scoreboard;
@@ -74,7 +78,18 @@ public class GameStateHandler
 
     public void CheckWinCondition(Planet planet)
     {
-        if (planet.PlanetType != PlanetType.Sun || _gameWonTriggered) return;
+        switch (_gameMode)
+        {
+            case GameMode.Mode1:
+                if (planet.PlanetType != PlanetType.Sun || _gameWonTriggered) return;
+                break;
+            case GameMode.Mode2:
+                if (planet.PlanetType != PlanetType.Pluto || _gameWonTriggered) return;
+                break;
+            default:
+                throw new ArgumentException("Invalid game mode");
+        }
+
         _gameWonTriggered = true;
         _userInterfaceCreator.ShowMessageWindow("Congratulations! You won!");
     }
