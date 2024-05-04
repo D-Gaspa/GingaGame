@@ -2,7 +2,6 @@
 
 /// <summary>
 ///     Represents the player's score in the game.
-///     Provides methods to increase and reset the score.
 /// </summary>
 public class Score
 {

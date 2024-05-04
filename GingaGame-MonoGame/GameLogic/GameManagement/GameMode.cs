@@ -1,7 +1,7 @@
 ﻿namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The available game modes.
+///     Enumerates the game modes available in the game.
 /// </summary>
 public enum GameMode
 {

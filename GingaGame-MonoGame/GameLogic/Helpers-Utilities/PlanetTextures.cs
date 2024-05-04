@@ -6,8 +6,8 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     Static class responsible for managing the textures of different planet types,
-///     ensuring each texture is loaded only once and reused when needed.
+///     Static class that manages the textures of different planet types, ensuring each texture is loaded only once and
+///     reused when needed.
 /// </summary>
 public static class PlanetTextures
 {

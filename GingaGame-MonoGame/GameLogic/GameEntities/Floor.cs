@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     Represents a floor/level in the game.
+///     Represents a floor/level in the second game mode.
 /// </summary>
 public class Floor
 {

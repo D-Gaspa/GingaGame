@@ -5,15 +5,14 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The Scene class represents a scenario in the game and manages the game's objects, such as planets, floors and the
-///     container.
+///     Represents a scenario in the game and manages the game's objects, such as planets, floors and the container.
 /// </summary>
 public class Scene
 {
     public readonly Container Container;
 
     /// <summary>
-    ///     Initializes a new instance of the Scene class.
+    ///     Initializes a new instance of the <see cref="Scene"/> class.
     /// </summary>
     /// <param name="container">The container of the scene.</param>
     public Scene(Container container)

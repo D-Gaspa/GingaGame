@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     A factory class to generate new planets and manage unlocked types based on the game mode.
+///     Generates new planets and manages unlocked types based on the game mode.
 /// </summary>
 public class PlanetFactory
 {
@@ -14,7 +14,7 @@ public class PlanetFactory
     private List<PlanetType> _unlockedPlanets;
 
     /// <summary>
-    ///     Constructor of the PlanetFactory class.
+    ///     Constructor of the <see cref="PlanetFactory"/> class.
     /// </summary>
     /// <param name="gameMode">The current game mode (GameMode.Mode1 or GameMode.Mode2).</param>
     public PlanetFactory(GameMode gameMode)

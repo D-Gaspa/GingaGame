@@ -3,7 +3,7 @@
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     Service responsible for handling the merging of two planets.
+///     Handles the merging of two planets.
 /// </summary>
 public class PlanetMergingService
 {
@@ -14,7 +14,7 @@ public class PlanetMergingService
     private readonly Score _score;
 
     /// <summary>
-    ///     Initializes a new instance of the PlanetMergingService class.
+    ///     Initializes a new instance of the <see cref="PlanetMergingService"/> class.
     /// </summary>
     /// <param name="scene">The current scene.</param>
     /// <param name="gameMode">The current game mode.</param>

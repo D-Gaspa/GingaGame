@@ -15,7 +15,7 @@ public class VerletPoint
     public Vector2 Velocity;
 
     /// <summary>
-    ///     Creates a new instance of VerletPoint
+    ///     Creates a new instance of the <see cref="VerletPoint"/> class.
     /// </summary>
     /// <param name="position">Initial position of the point</param>
     /// <param name="radius">Radius of the point used to calculate the mass</param>

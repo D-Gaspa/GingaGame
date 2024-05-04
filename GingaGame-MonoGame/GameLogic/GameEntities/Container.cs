@@ -17,7 +17,7 @@ public class Container
     public Vector2 BottomRight { get; private set; }
 
     /// <summary>
-    ///     Initialize the Container with the specified game mode, size, and margin settings.
+    ///     Initializes a new instance of the <see cref="Container"/> class with the specified game mode, size, and margin settings.
     /// </summary>
     /// <param name="graphicsDevice">A GraphicsDevice that represents the display device.</param>
     /// <param name="containerHeight">Height of the container.</param>

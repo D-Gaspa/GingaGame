@@ -15,7 +15,7 @@ public class Scoreboard
     private readonly List<ScoreEntry> _scores = new();
 
     /// <summary>
-    ///     Initializes a new instance of the Scoreboard class.
+    ///     Initializes a new instance of the <see cref="Scoreboard"/> class.
     /// </summary>
     /// <param name="gameMode">The game mode for which to manage scores.</param>
     public Scoreboard(GameMode gameMode)

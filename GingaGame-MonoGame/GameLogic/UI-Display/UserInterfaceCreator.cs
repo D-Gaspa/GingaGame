@@ -5,7 +5,7 @@ using Myra.Graphics2D.UI;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The UserInterfaceCreator class provides methods to create UI elements for the game.
+///     Provides methods to create UI elements for the game.
 /// </summary>
 public class UserInterfaceCreator
 {
@@ -13,7 +13,7 @@ public class UserInterfaceCreator
     private readonly GameScreen _gameScreen;
 
     /// <summary>
-    ///     Initializes a new instance of the UserInterfaceCreator class.
+    ///     Initializes a new instance of the <see cref="UserInterfaceCreator"/> class.
     /// </summary>
     /// <param name="desktop">The desktop UI manager.</param>
     /// <param name="gameScreen">The game screen that the UI will be displayed on.</param>

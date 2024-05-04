@@ -13,7 +13,7 @@ public class CollisionResolver
     private readonly PlanetMergingService _planetMergingService;
 
     /// <summary>
-    ///     Constructor for the CollisionResolver class.
+    ///     Constructor for the <see cref="CollisionResolver"/> class.
     ///     All dependencies are passed through this constructor and stored for use in the class methods.
     /// </summary>
     /// <param name="gameStateHandler">Provides the ability to check game state.</param>

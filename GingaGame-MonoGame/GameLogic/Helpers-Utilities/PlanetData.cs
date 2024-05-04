@@ -9,7 +9,7 @@ namespace GingaGame_MonoGame.GameLogic;
 public class PlanetData
 {
     /// <summary>
-    ///     Constructor for the PlanetData class.
+    ///     Constructor for the <see cref="PlanetData"/> class.
     /// </summary>
     private PlanetData(float size, int points, Texture2D texture)
     {
@@ -34,7 +34,7 @@ public class PlanetData
     public Texture2D Texture { get; private set; }
 
     /// <summary>
-    ///     Creates a PlanetData instance from the given PlanetType.
+    ///     Creates a <see cref="PlanetData"/> instance from the given PlanetType.
     /// </summary>
     /// <param name="planetType">Planet type whose data to generate.</param>
     /// <returns>Returns a PlanetData instance.</returns>

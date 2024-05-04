@@ -12,7 +12,7 @@ public class CollisionManager
     private readonly Scene _scene;
 
     /// <summary>
-    ///     Constructor that initializes a new instance of the CollisionManager class and its dependencies.
+    ///     Constructor that initializes a new instance of the <see cref="CollisionManager"/> class and its dependencies.
     /// </summary>
     /// <param name="constraintHandler">An object used to manage constraints.</param>
     /// <param name="gameMode">The current game mode.</param>

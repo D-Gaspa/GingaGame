@@ -4,16 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The Planet class represents a singular playable object within the game.
-///     <para>
-///         Each Planet has its own PlanetType along with other properties such as radius, points, texture, and collision
-///         status.
-///     </para>
+///     Represents a singular playable object within the game.
+///     Planets are the main objects in the game that the player interacts with.
 /// </summary>
 public class Planet : VerletPoint
 {
     /// <summary>
-    ///     Initializes new instance of the Planet class.
+    ///     Initializes new instance of the <see cref="Planet"/> class.
     /// </summary>
     /// <param name="planetType">The type of the planet to create.</param>
     /// <param name="position">The initial position of the planet.</param>

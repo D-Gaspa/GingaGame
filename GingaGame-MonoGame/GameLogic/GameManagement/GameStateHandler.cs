@@ -3,8 +3,7 @@
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     Class responsible for handling the game's state: checks end game conditions, updates and resets the game, and
-///     manages game pauses.
+///     Handles the game's state: checks end game conditions, updates and resets the game, and manages game pauses.
 /// </summary>
 public class GameStateHandler
 {
@@ -30,7 +29,7 @@ public class GameStateHandler
     private bool _gameWonTriggered;
 
     /// <summary>
-    ///     Initializes a new instance of the GameStateHandler class.
+    ///     Initializes a new instance of the <see cref="GameStateHandler"/> class.
     /// </summary>
     /// <param name="container">The game container.</param>
     /// <param name="gameMode">The current game mode (GameMode.Mode1 or GameMode.Mode2).</param>

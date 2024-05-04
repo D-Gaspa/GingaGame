@@ -4,7 +4,7 @@ using System.Drawing;
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The CollisionDetector class is used to check if collisions are happening between any of the Planets.
+///     Checks if collisions are happening between any of the Planets.
 /// </summary>
 public class CollisionDetector
 {
@@ -12,7 +12,7 @@ public class CollisionDetector
     private readonly List<(Planet, Planet)> _potentialCollisionPairs = new();
 
     /// <summary>
-    ///     Initializes a new instance of the CollisionDetector class.
+    ///     Initializes a new instance of the <see cref="CollisionDetector"/> class
     /// </summary>
     /// <param name="planets">List of the planets in the current game scene.</param>
     public CollisionDetector(List<Planet> planets)

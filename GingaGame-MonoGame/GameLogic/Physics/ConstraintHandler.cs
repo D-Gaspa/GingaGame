@@ -3,8 +3,7 @@
 namespace GingaGame_MonoGame.GameLogic;
 
 /// <summary>
-///     The ConstraintHandler class enforces constraints for the movement of a Planet, restricting it within various game
-///     boundaries.
+///     Enforces constraints for the movement of a Planet, restricting it within various game boundaries.
 /// </summary>
 public class ConstraintHandler
 {
@@ -13,7 +12,7 @@ public class ConstraintHandler
     private readonly Scene _scene;
 
     /// <summary>
-    ///     Initializes a new instance of the ConstraintHandler class.
+    ///     Initializes a new instance of the <see cref="ConstraintHandler"/> class.
     /// </summary>
     /// <param name="gameMode">The current game mode.</param>
     /// <param name="scene">The current game scene.</param>
