@@ -17,4 +17,9 @@ In this mode, players strategically drop planets into a container, aiming to col
 ![Game Mode 2](GingaGame-MonoGame/Assets/README-GameMode2.png)
 This mode, known as 'Reverse Evolution', challenges players in a different way. The game begins with a sun and the player's objective is to combine planets to shrink them. Gameplay takes place across a multi-floor container, where each floor has a set limit on the size of planets it will allow. Therefore, players should aim to combine larger planets into smaller ones that can be accepted on the next floor. Game progression happens from one floor to the next, with the aim of reaching the smallest planet at the bottom-most floor to win the game.
 
+### Demonstration
+![Game Demonstration 1](GingaGame-MonoGame/Assets/README-Demo1.gif)
+
+![Game Demonstration 2](GingaGame-MonoGame/Assets/README-Demo2.gif)
+
 Enjoy this strategic, cosmic adventure!
