@@ -7,6 +7,9 @@ using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame;
 
+/// <summary>
+///     Represents the main game class.
+/// </summary>
 public class Game1 : Game
 {
     private readonly GraphicsDeviceManager _graphics;
@@ -14,6 +17,9 @@ public class Game1 : Game
     private Desktop _desktop;
     public SpriteBatch SpriteBatch;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="Game1" /> class.
+    /// </summary>
     public Game1()
     {
         // Set the graphics device manager
@@ -22,8 +28,14 @@ public class Game1 : Game
         IsMouseVisible = true;
     }
 
+    /// <summary>
+    ///     Gets the current keyboard state.
+    /// </summary>
     public static MouseState MouseState => Mouse.GetState();
 
+    /// <summary>
+    ///     Initialize the game: set graphics and load initial content.
+    /// </summary>
     protected override void Initialize()
     {
         // Set the game to fullscreen
@@ -43,6 +55,10 @@ public class Game1 : Game
         base.Initialize();
     }
 
+    /// <summary>
+    ///     Loads the game content. This method will be called once per game and is the place to load
+    ///     all the content.
+    /// </summary>
     protected override void LoadContent()
     {
         SpriteBatch = new SpriteBatch(GraphicsDevice);
@@ -51,6 +67,10 @@ public class Game1 : Game
         _screens.Peek().LoadContent();
     }
 
+    /// <summary>
+    ///     Updates the state of the top screen in the stack.
+    /// </summary>
+    /// <param name="gameTime">The current game time snapshot.</param>
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -62,6 +82,10 @@ public class Game1 : Game
         base.Update(gameTime);
     }
 
+    /// <summary>
+    ///     This is called when the game should draw itself.
+    /// </summary>
+    /// <param name="gameTime">Provides a snapshot of timing values.</param>
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -74,6 +98,10 @@ public class Game1 : Game
         base.Draw(gameTime);
     }
 
+    /// <summary>
+    ///     Switches the current screen to the given screen.
+    /// </summary>
+    /// <param name="screen">The screen to switch to.</param>
     public void SwitchScreen(GameScreen screen)
     {
         _screens.Pop();

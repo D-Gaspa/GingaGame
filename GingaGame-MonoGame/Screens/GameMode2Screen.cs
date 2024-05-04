@@ -8,6 +8,9 @@ using Myra.Graphics2D.UI;
 
 namespace GingaGame_MonoGame;
 
+/// <summary>
+///     Represents the game mode 2 screen.
+/// </summary>
 public class GameMode2Screen : GameModeScreenBase
 {
     private const float ParallaxBackgroundFactor = 0.1f;
@@ -47,6 +50,9 @@ public class GameMode2Screen : GameModeScreenBase
     private int _verticalMargin = 120;
 
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="GameMode2Screen" /> class.
+    /// </summary>
     public GameMode2Screen(Game1 game, Desktop desktop, string selectedLevel) : base(game, desktop)
     {
         // Game components are initialized in the base class
@@ -65,9 +71,19 @@ public class GameMode2Screen : GameModeScreenBase
         desktop.Widgets.Add(_followPlanetCheckButton);
     }
 
+    /// <summary>
+    ///     Represents the game mode of the screen. Value is set to the second game mode.
+    /// </summary>
     protected override GameMode Mode => GameMode.Mode2;
+
+    /// <summary>
+    ///     Represents the floor height in the game.
+    /// </summary>
     private int FloorHeight => Game.GraphicsDevice.Viewport.Height - 2 * _verticalMargin;
 
+    /// <summary>
+    ///     Initializes the game-specific components of the game mode.
+    /// </summary>
     protected override void InitializeGameSpecificComponents()
     {
         // Game mode 2-specific code
@@ -77,6 +93,13 @@ public class GameMode2Screen : GameModeScreenBase
             planetMergingService, Scene);
     }
 
+    /// <summary>
+    ///     Initializes the elements required for the game mode screen.
+    /// </summary>
+    /// <remarks>
+    ///     This method loads the map data based on the selected level, initializes the floors with planets, and sets up the
+    ///     container for the game.
+    /// </remarks>
     protected override void InitializeElements()
     {
         base.InitializeElements();
@@ -98,6 +121,10 @@ public class GameMode2Screen : GameModeScreenBase
             _verticalMargin, _verticalMargin, _horizontalMargin);
     }
 
+    /// <summary>
+    ///     Loads the map data for Game Mode 2.
+    /// </summary>
+    /// <param name="mapData">The dictionary containing the map data.</param>
     private void LoadGameMode2Map(Dictionary<string, string> mapData)
     {
         foreach (var (key, value) in mapData)
@@ -132,6 +159,10 @@ public class GameMode2Screen : GameModeScreenBase
             throw new Exception("The number of planets per floor should be greater than 0.");
     }
 
+    /// <summary>
+    ///     Updates the state of the GameMode2Screen. This method is called every frame to update the game state.
+    /// </summary>
+    /// <param name="gameTime">The current game time snapshot.</param>
     public override void Update(GameTime gameTime)
     {
         _followPlanet = _followPlanetCheckButton.IsChecked;
@@ -145,6 +176,13 @@ public class GameMode2Screen : GameModeScreenBase
         base.Update(gameTime);
     }
 
+    /// <summary>
+    ///     Handles the keyboard input for the GameMode2Screen.
+    /// </summary>
+    /// <remarks>
+    ///     This method handles the keyboard input for scrolling through the floors and dropping the current planet.
+    /// </remarks>
+    /// <param name="keyboardState">The current state of the keyboard.</param>
     private void HandleKeyboardInput(KeyboardState keyboardState)
     {
         const int scrollSpeed = 35;
@@ -188,6 +226,13 @@ public class GameMode2Screen : GameModeScreenBase
         }
     }
 
+    /// <summary>
+    ///     Handles a mouse click event.
+    /// </summary>
+    /// <remarks>
+    ///     This method handles the mouse click event for dropping the current planet.
+    /// </remarks>
+    /// <param name="mouseState">The current state of the mouse.</param>
     protected override void HandleMouseClick(MouseState mouseState)
     {
         // Check if the left mouse button is pressed and input is enabled
@@ -211,11 +256,17 @@ public class GameMode2Screen : GameModeScreenBase
         }
     }
 
+    /// <summary>
+    ///     Deselects the current planet.
+    /// </summary>
     private void DeselectCurrentPlanet()
     {
         _currentPlanet = null;
     }
 
+    /// <summary>
+    ///     Draws the game elements on the screen.
+    /// </summary>
     public override void Draw()
     {
         // Scrolling Logic
@@ -230,6 +281,9 @@ public class GameMode2Screen : GameModeScreenBase
         base.Draw();
     }
 
+    /// <summary>
+    ///     Calculates the scroll offset based on the current floor and the position of the planet.
+    /// </summary>
     private void CalculateScrollOffset()
     {
         if (_currentPlanet == null) return;
@@ -250,16 +304,31 @@ public class GameMode2Screen : GameModeScreenBase
         if (_followPlanet) _scrollOffset += (int)(_currentPlanet.Position.Y - currentFloor.StartPositionY);
     }
 
+    /// <summary>
+    ///     Draws the scene to the screen.
+    /// </summary>
+    /// <remarks>
+    ///     This method is responsible for drawing the scene, including the planets, the container and floors (if any), to the
+    ///     screen.
+    /// </remarks>
     protected override void DrawScene()
     {
         Scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height, _scrollOffset);
     }
 
+    /// <summary>
+    ///     Gets the current planet in GameMode2.
+    /// </summary>
+    /// <returns>The current planet.</returns>
     public Planet GetCurrentPlanet()
     {
         return _currentPlanet;
     }
 
+    /// <summary>
+    ///     Sets the current planet in GameMode2Screen to the specified planet.
+    /// </summary>
+    /// <param name="planet">The planet to set as the current planet.</param>
     public void SetCurrentPlanet(Planet planet)
     {
         _currentPlanet = planet;

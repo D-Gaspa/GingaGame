@@ -7,6 +7,9 @@ using Container = GingaGame_MonoGame.GameLogic.Container;
 
 namespace GingaGame_MonoGame;
 
+/// <summary>
+///     The base class for game modes screens in the game.
+/// </summary>
 public abstract class GameModeScreenBase : GameScreen
 {
     private const double ClickDelay = 0.5; // Delay in seconds
@@ -18,22 +21,41 @@ public abstract class GameModeScreenBase : GameScreen
     protected Planet CurrentPlanetToDrop;
     protected GameStateHandler GameStateHandler;
     protected bool IsInputEnabled = true;
-    protected bool MouseClickHandled;
     protected PlanetFactory PlanetFactory;
     protected Scene Scene;
     protected Score Score;
     protected GameUserInterfaceManager UserInterfaceManager;
 
+    /// <summary>
+    ///     Initializes a new instance of the GameModeScreenBase class.
+    /// </summary>
+    /// <param name="game">A reference to the main Game instance.</param>
+    /// <param name="desktop">The desktop UI manager.</param>
     protected GameModeScreenBase(Game1 game, Desktop desktop) : base(game)
     {
         InitializeGameComponents(game, desktop);
     }
 
+    /// <summary>
+    ///     Gets the game mode, should be overridden in derived classes
+    /// </summary>
     protected abstract GameMode Mode { get; }
 
+    /// <summary>
+    ///     Gets a value indicating whether the game is over.
+    /// </summary>
     protected bool IsGameOver => GameStateHandler.IsGameOver;
+
+    /// <summary>
+    ///     Gets a value indicating whether the game is paused.
+    /// </summary>
     private bool IsGamePaused => GameStateHandler.IsGamePaused;
 
+    /// <summary>
+    ///     Initializes the common game components of a game mode.
+    /// </summary>
+    /// <param name="game">A reference to the main Game instance.</param>
+    /// <param name="desktop">The desktop UI manager.</param>
     private void InitializeGameComponents(Game1 game, Desktop desktop)
     {
         PlanetTextures.SetContentManager(Game.Content);
@@ -59,19 +81,31 @@ public abstract class GameModeScreenBase : GameScreen
         SetupPlanetsAndScene();
     }
 
+    /// <summary>
+    ///     Initializes the game-specific components of the game mode.
+    /// </summary>
     protected abstract void InitializeGameSpecificComponents();
 
+    /// <summary>
+    ///     Load the visual and non-visual content for the concrete game mode.
+    /// </summary>
     public override void LoadContent()
     {
         UserInterfaceManager.LoadContent();
         InitializeElements();
     }
 
+    /// <summary>
+    ///     Initializes the elements required for the game mode screen.
+    /// </summary>
     protected virtual void InitializeElements()
     {
         UserInterfaceManager.Initialize(_scoreboard);
     }
 
+    /// <summary>
+    ///     Resets the state of the game screen.
+    /// </summary>
     public override void ResetGame()
     {
         // Reset the game state and initialize the game again
@@ -83,6 +117,9 @@ public abstract class GameModeScreenBase : GameScreen
         GameStateHandler.IsGameOver = false;
     }
 
+    /// <summary>
+    ///     Sets up the initial planets and scene for the game depending on the game mode.
+    /// </summary>
     private void SetupPlanetsAndScene()
     {
         var middleX = Game.GraphicsDevice.Viewport.Width / 2;
@@ -103,6 +140,9 @@ public abstract class GameModeScreenBase : GameScreen
         GenerateNextPlanet();
     }
 
+    /// <summary>
+    ///     Resumes the game logic after being paused.
+    /// </summary>
     public override void ResumeGame()
     {
         IsInputEnabled = true;
@@ -112,17 +152,27 @@ public abstract class GameModeScreenBase : GameScreen
         GameStateHandler.ResumeGame();
     }
 
+    /// <summary>
+    ///     Pauses the game logic.
+    /// </summary>
     public override void PauseGame()
     {
         IsInputEnabled = false;
         GameStateHandler.PauseGame();
     }
 
+    /// <summary>
+    ///     Generates the next planet to be dropped in the game.
+    /// </summary>
     private void GenerateNextPlanet()
     {
         _nextPlanet = PlanetFactory.GenerateNextPlanet(Game.GraphicsDevice.Viewport.Width);
     }
 
+    /// <summary>
+    ///     Updates the game state.
+    /// </summary>
+    /// <param name="gameTime">The current game time.</param>
     public override void Update(GameTime gameTime)
     {
         // Get the current mouse state
@@ -149,6 +199,10 @@ public abstract class GameModeScreenBase : GameScreen
         GameStateHandler.Update();
     }
 
+    /// <summary>
+    ///     Handles a mouse click event.
+    /// </summary>
+    /// <param name="mouseState">The current state of the mouse.</param>
     protected virtual void HandleMouseClick(MouseState mouseState)
     {
         // Check if the left mouse button is pressed and input is enabled
@@ -162,6 +216,10 @@ public abstract class GameModeScreenBase : GameScreen
         IsInputEnabled = false;
     }
 
+    /// <summary>
+    ///     Handles the elapsed time in the game.
+    /// </summary>
+    /// <param name="gameTime">The game time.</param>
     private void HandleElapsedTime(GameTime gameTime)
     {
         _elapsedTime += gameTime.ElapsedGameTime.TotalSeconds;
@@ -172,6 +230,9 @@ public abstract class GameModeScreenBase : GameScreen
         _elapsedTime = 0;
     }
 
+    /// <summary>
+    ///     Switches the current planet with the next planet, pinning the new planet and adding it to the scene.
+    /// </summary>
     private void SwitchPlanet()
     {
         // Switch the current planet with the next planet
@@ -187,6 +248,10 @@ public abstract class GameModeScreenBase : GameScreen
         GenerateNextPlanet();
     }
 
+    /// <summary>
+    ///     Updates the current planet's position based on the mouse state.
+    /// </summary>
+    /// <param name="mouseState">The current state of the mouse.</param>
     protected void UpdateCurrentPlanetPosition(MouseState mouseState)
     {
         var x = mouseState.X;
@@ -211,6 +276,9 @@ public abstract class GameModeScreenBase : GameScreen
         }
     }
 
+    /// <summary>
+    ///     Updates the score if it has changed.
+    /// </summary>
     private void UpdateScoreIfChanged()
     {
         if (!Score.HasChanged) return;
@@ -218,6 +286,9 @@ public abstract class GameModeScreenBase : GameScreen
         Score.HasChanged = false;
     }
 
+    /// <summary>
+    ///     Draws the content of the screen.
+    /// </summary>
     public override void Draw()
     {
         Game.SpriteBatch.Begin();
@@ -234,6 +305,13 @@ public abstract class GameModeScreenBase : GameScreen
         Game.SpriteBatch.End();
     }
 
+    /// <summary>
+    ///     Draws the scene to the screen.
+    /// </summary>
+    /// <remarks>
+    ///     This method is responsible for drawing the scene, including the planets, the container and floors (if any), to the
+    ///     screen.
+    /// </remarks>
     protected virtual void DrawScene()
     {
         Scene.Draw(Game.SpriteBatch, Game.GraphicsDevice.Viewport.Height);

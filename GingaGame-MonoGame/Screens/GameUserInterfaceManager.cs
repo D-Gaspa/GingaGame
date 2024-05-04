@@ -6,72 +6,101 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace GingaGame_MonoGame;
 
+/// <summary>
+///     Responsible for managing the game user interface.
+/// </summary>
 public class GameUserInterfaceManager
 {
     private const float EvolutionCycleScaleFactor = 0.4f;
     private const float DesiredFontHeight = 35;
     private readonly Game1 _game;
     private readonly GameMode _gameMode;
-
     private int _backgroundRepetitions;
+    private Texture2D _backgroundTexture;
     private int _backgroundYOffset;
+    private Texture2D _evolutionCycleTexture;
+    private SpriteFont _font;
+    private float _nextPlanetFontScale;
+    private Texture2D _nextPlanetFontTexture;
+    private Texture2D _nextPlanetTexture;
+    private float _scoreFontScale;
+    private Texture2D _scoreFontTexture;
+    private float _topScoresFontScale;
+    private Texture2D _topScoresFontTexture;
+    private string _topScoresText;
+    public string ScoreText;
 
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="GameUserInterfaceManager" /> class.
+    /// </summary>
+    /// <param name="game">Reference to main game class.</param>
+    /// <param name="gameMode">Current game mode.</param>
     public GameUserInterfaceManager(Game1 game, GameMode gameMode)
     {
         _game = game;
         _gameMode = gameMode;
     }
 
-    private float NextPlanetFontScale { get; set; }
-    private float ScoreFontScale { get; set; }
-    private float TopScoresFontScale { get; set; }
-    private Texture2D BackgroundTexture { get; set; }
-    private Texture2D NextPlanetFontTexture { get; set; }
-    private Texture2D ScoreFontTexture { get; set; }
-    private Texture2D EvolutionCycleTexture { get; set; }
-    private Texture2D TopScoresFontTexture { get; set; }
-    private Texture2D NextPlanetTexture { get; set; }
-    private SpriteFont Font { get; set; }
-    public string ScoreText { get; set; }
-    private string TopScoresText { get; set; }
-
+    /// <summary>
+    ///     Loads content used by this class (textures, fonts, etc.).
+    /// </summary>
     public void LoadContent()
     {
         LoadTexturesAndFont();
         CalculateScales();
     }
 
+    /// <summary>
+    ///     Loads required textures and font for the game user interface.
+    /// </summary>
     private void LoadTexturesAndFont()
     {
-        BackgroundTexture =
+        _backgroundTexture =
             LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/Background2" : "Resources/ScrollerBackground1");
 
-        EvolutionCycleTexture =
+        _evolutionCycleTexture =
             LoadTexture(_gameMode == GameMode.Mode1 ? "Resources/EvolutionCycle" : "Resources/EvolutionCycle2");
 
-        NextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
-        ScoreFontTexture = LoadTexture("Resources/ScoreFont");
-        TopScoresFontTexture = LoadTexture("Resources/TopScoresFont");
-        Font = _game.Content.Load<SpriteFont>("MyFont");
+        _nextPlanetFontTexture = LoadTexture("Resources/NextPlanetFont");
+        _scoreFontTexture = LoadTexture("Resources/ScoreFont");
+        _topScoresFontTexture = LoadTexture("Resources/TopScoresFont");
+        _font = _game.Content.Load<SpriteFont>("MyFont");
     }
 
+    /// <summary>
+    ///     Loads a texture from the given path.
+    /// </summary>
+    /// <param name="path">The path to the texture.</param>
+    /// <returns>The loaded Texture2D object.</returns>
     private Texture2D LoadTexture(string path)
     {
         return _game.Content.Load<Texture2D>(path);
     }
 
+    /// <summary>
+    ///     Calculates the scale based on the desired font height.
+    /// </summary>
+    /// <param name="height">The height to calculate the scale for.</param>
+    /// <returns>The calculated scale.</returns>
     private static float CalculateScale(float height)
     {
         return DesiredFontHeight / height;
     }
 
+    /// <summary>
+    ///     Calculates the scales for the user interface elements based on the textures' heights.
+    /// </summary>
     private void CalculateScales()
     {
-        NextPlanetFontScale = CalculateScale(NextPlanetFontTexture.Height);
-        ScoreFontScale = CalculateScale(ScoreFontTexture.Height);
-        TopScoresFontScale = CalculateScale(TopScoresFontTexture.Height - 18);
+        _nextPlanetFontScale = CalculateScale(_nextPlanetFontTexture.Height);
+        _scoreFontScale = CalculateScale(_scoreFontTexture.Height);
+        _topScoresFontScale = CalculateScale(_topScoresFontTexture.Height - 18);
     }
 
+    /// <summary>
+    ///     Initializes the GameUserInterfaceManager instance.
+    /// </summary>
+    /// <param name="scoreboard">The scoreboard object containing score data.</param>
     public void Initialize(Scoreboard scoreboard)
     {
         ScoreText = "0";
@@ -79,12 +108,19 @@ public class GameUserInterfaceManager
         UpdateScoreboardText(scoreboard);
     }
 
+    /// <summary>
+    ///     Updates the text displayed on the scoreboard.
+    /// </summary>
+    /// <param name="scoreboard">The scoreboard object containing score data.</param>
     public void UpdateScoreboardText(Scoreboard scoreboard)
     {
-        TopScoresText = string.Join("\n",
+        _topScoresText = string.Join("\n",
             scoreboard.GetTopScores().Select(entry => $"{entry.PlayerName}: {entry.Score}"));
     }
 
+    /// <summary>
+    ///     Draws the interface elements on the screen.
+    /// </summary>
     public void DrawInterfaceElements()
     {
         DrawBackground();
@@ -94,20 +130,30 @@ public class GameUserInterfaceManager
         DrawEvolutionCycle();
     }
 
+    /// <summary>
+    ///     Prepares the background with an offset for parallax scrolling effect.
+    /// </summary>
+    /// <param name="backgroundYOffset">The vertical offset of the background.</param>
+    /// <param name="screenHeight">The height of the screen.</param>
+    /// <param name="verticalMargin">The vertical margin.</param>
     public void PrepareBackgroundWithOffset(int backgroundYOffset, int screenHeight, int verticalMargin)
     {
         _backgroundYOffset = backgroundYOffset;
         // Calculate how many background image repetitions are needed to cover the viewable area
         _backgroundRepetitions = (int)Math.Ceiling((screenHeight + 2 * verticalMargin + backgroundYOffset) /
-                                                   (float)BackgroundTexture.Height);
+                                                   (float)_backgroundTexture.Height);
     }
 
+    /// <summary>
+    ///     Draws the background based on the current game mode. The background is drawn differently for each game mode.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the game mode is not valid.</exception>
     private void DrawBackground()
     {
         switch (_gameMode)
         {
             case GameMode.Mode1:
-                _game.SpriteBatch.Draw(BackgroundTexture,
+                _game.SpriteBatch.Draw(_backgroundTexture,
                     new Rectangle(0, 0, _game.GraphicsDevice.Viewport.Width, _game.GraphicsDevice.Viewport.Height),
                     Color.White);
                 break;
@@ -116,9 +162,9 @@ public class GameUserInterfaceManager
                 // Draw the background image multiple times, offsetting it vertically for each repetition
                 for (var i = 0; i < _backgroundRepetitions; i++)
                 {
-                    var yPosition = -_backgroundYOffset + i * BackgroundTexture.Height;
-                    _game.SpriteBatch.Draw(BackgroundTexture,
-                        new Rectangle(0, yPosition, _game.GraphicsDevice.Viewport.Width, BackgroundTexture.Height),
+                    var yPosition = -_backgroundYOffset + i * _backgroundTexture.Height;
+                    _game.SpriteBatch.Draw(_backgroundTexture,
+                        new Rectangle(0, yPosition, _game.GraphicsDevice.Viewport.Width, _backgroundTexture.Height),
                         Color.White);
                 }
 
@@ -129,64 +175,96 @@ public class GameUserInterfaceManager
         }
     }
 
+    /// <summary>
+    ///     Draws the next planet text on the game user interface.
+    /// </summary>
     private void DrawNextPlanetText()
     {
-        _game.SpriteBatch.Draw(NextPlanetFontTexture, new Vector2(65, 25), null, Color.White, 0, Vector2.Zero,
-            NextPlanetFontScale, SpriteEffects.None, 0);
+        _game.SpriteBatch.Draw(_nextPlanetFontTexture, new Vector2(65, 25), null, Color.White, 0, Vector2.Zero,
+            _nextPlanetFontScale, SpriteEffects.None, 0);
     }
 
+    /// <summary>
+    ///     Draws a sprite containing text on the screen.
+    /// </summary>
+    /// <param name="texture">The texture to be drawn on the screen.</param>
+    /// <param name="position">The position at which the texture will be drawn.</param>
+    /// <param name="scale">The scale factor applied to the texture.</param>
     private void DrawTextSprite(Texture2D texture, Vector2 position, float scale)
     {
         _game.SpriteBatch.Draw(texture, position, null, Color.White, 0, Vector2.Zero,
             scale, SpriteEffects.None, 0);
     }
 
+    /// <summary>
+    ///     Draws text at the specified position.
+    /// </summary>
+    /// <param name="text">The text to be drawn.</param>
+    /// <param name="position">The position where the text should be drawn.</param>
     private void DrawText(string text, Vector2 position)
     {
-        _game.SpriteBatch.DrawString(Font, text, position, Color.White);
+        _game.SpriteBatch.DrawString(_font, text, position, Color.White);
     }
 
+    /// <summary>
+    ///     Draws the score on the game user interface.
+    /// </summary>
     private void DrawScore()
     {
-        DrawTextSprite(ScoreFontTexture, new Vector2(65, 281), ScoreFontScale);
+        DrawTextSprite(_scoreFontTexture, new Vector2(65, 281), _scoreFontScale);
         DrawText(ScoreText, new Vector2(190, 285));
     }
 
+    /// <summary>
+    ///     Draws the top scores on the game interface.
+    /// </summary>
     private void DrawTopScores()
     {
-        DrawTextSprite(TopScoresFontTexture, new Vector2(65, 365), TopScoresFontScale);
-        DrawText(TopScoresText, new Vector2(65, 410));
+        DrawTextSprite(_topScoresFontTexture, new Vector2(65, 365), _topScoresFontScale);
+        DrawText(_topScoresText, new Vector2(65, 410));
     }
 
+    /// <summary>
+    ///     Represents a class responsible for managing the game user interface.
+    /// </summary>
     private void DrawEvolutionCycle()
     {
-        _game.SpriteBatch.Draw(EvolutionCycleTexture, new Vector2(20, 610), null, Color.White, 0, Vector2.Zero,
+        _game.SpriteBatch.Draw(_evolutionCycleTexture, new Vector2(20, 610), null, Color.White, 0, Vector2.Zero,
             EvolutionCycleScaleFactor, SpriteEffects.None, 0);
     }
 
+    /// <summary>
+    ///     Draws the next planet on the game screen.
+    /// </summary>
+    /// <param name="nextPlanet">The planet object representing the next planet to draw.</param>
     public void DrawNextPlanet(Planet nextPlanet)
     {
-        NextPlanetTexture = PlanetTextures.GetCachedTexture(nextPlanet.PlanetType);
+        _nextPlanetTexture = PlanetTextures.GetCachedTexture(nextPlanet.PlanetType);
         var imageDimensions = new Vector2(nextPlanet.Radius * 2);
 
         // Calculate the position for the next planet
         var nextPlanetPosition = CalculateNextPlanetPosition(imageDimensions.X);
 
-        _game.SpriteBatch.Draw(NextPlanetTexture,
+        _game.SpriteBatch.Draw(_nextPlanetTexture,
             new Rectangle((int)nextPlanetPosition.X, (int)(nextPlanetPosition.Y - imageDimensions.Y / 2),
                 (int)imageDimensions.X, (int)imageDimensions.Y), Color.White);
     }
 
+    /// <summary>
+    ///     Calculates the position for the next planet.
+    /// </summary>
+    /// <param name="imageWidth">The width of the planet image.</param>
+    /// <returns>The position for the next planet.</returns>
     private Vector2 CalculateNextPlanetPosition(float imageWidth)
     {
         // Calculate the middle X position of the "Next Planet" text
-        var nextPlanetTextMiddleX = 65 + NextPlanetFontTexture.Width * NextPlanetFontScale / 2;
+        var nextPlanetTextMiddleX = 65 + _nextPlanetFontTexture.Width * _nextPlanetFontScale / 2;
 
         // Calculate the Y position of the "Score" text
         const int scoreTextY = 281;
 
         // Calculate the Y position of the "Next Planet" text
-        var nextPlanetTextY = 25 + NextPlanetFontTexture.Height * NextPlanetFontScale;
+        var nextPlanetTextY = 25 + _nextPlanetFontTexture.Height * _nextPlanetFontScale;
 
         // Calculate the middle Y position
         var middleY = (scoreTextY + nextPlanetTextY) / 2;
