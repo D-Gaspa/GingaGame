@@ -185,6 +185,10 @@ public class GameMode2Screen : GameModeScreenBase
     /// <param name="keyboardState">The current state of the keyboard.</param>
     private void HandleKeyboardInput(KeyboardState keyboardState)
     {
+        // Check if the game window is active
+        if (!Game.IsActive)
+            return;
+        
         const int scrollSpeed = 35;
 
         if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
@@ -235,6 +239,10 @@ public class GameMode2Screen : GameModeScreenBase
     /// <param name="mouseState">The current state of the mouse.</param>
     protected override void HandleMouseClick(MouseState mouseState)
     {
+        // Check if the game window is active
+        if (!Game.IsActive)
+            return;
+        
         // Check if the left mouse button is pressed and input is enabled
         if (mouseState.LeftButton != ButtonState.Pressed || !IsInputEnabled || IsGameOver) return;
         if (!CurrentPlanetToDrop.IsPinned) return;

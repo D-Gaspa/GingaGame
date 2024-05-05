@@ -205,6 +205,10 @@ public abstract class GameModeScreenBase : GameScreen
     /// <param name="mouseState">The current state of the mouse.</param>
     protected virtual void HandleMouseClick(MouseState mouseState)
     {
+        // Check if the game window is active
+        if (!Game.IsActive)
+            return;
+        
         // Check if the left mouse button is pressed and input is enabled
         if (mouseState.LeftButton != ButtonState.Pressed || !IsInputEnabled || IsGameOver) return;
         if (!CurrentPlanetToDrop.IsPinned) return;

@@ -104,6 +104,10 @@ public class MainMenuScreen : GameScreen
     {
         var selectedLevel = ((Label)_levelSelector.SelectedItem).Text;
 
+        // Check if the game window is active
+        if (!Game.IsActive)
+            return;
+        
         // Check if the game mode buttons are clicked
         if (Game1.MouseState.LeftButton != ButtonState.Pressed) return;
         if (_gameMode1ButtonRect.Contains(Game1.MouseState.Position))
